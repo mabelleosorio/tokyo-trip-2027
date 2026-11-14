@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tokyo Trip 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Caveat:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout idea: SaaS-style travel dashboard. Dark slate sidebar, light canvas, photo cover banners, crisp white panels */
+  --bg:#f4f5f7;
+  --panel:#ffffff;
+  --panel-2:#f8fafc;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --line:#e5e7eb;
+  --side:#0b1f3a;
+  --side-ink:#cbd5e1;
+  --side-hover:#1e293b;
+  --accent:#c8372d;
+  --accent-soft:#f7ebe4;
+  --gold:#b8860b;
+  --gold-soft:#fbf3dc;
+  --blue:#2563eb;
+  --blue-soft:#dbeafe;
+  --ok:#15803d; --ok-bg:#dcfce7;
+  --warn:#b45309; --warn-bg:#fef3c7;
+  --info-bg:#eff6ff;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 4px 14px rgba(15,23,42,.05);
+  --font-display:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-body:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:14px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0b1120;--panel:#111827;--panel-2:#0f172a;--ink:#e5e7eb;--muted:#94a3b8;--line:#1f2937;--side:#020617;--side-hover:#111827;--accent:#f87160;--accent-soft:#3a1e1a;--gold:#facc15;--gold-soft:#332a0c;--blue:#60a5fa;--blue-soft:#172554;--ok:#4ade80;--ok-bg:#052e16;--warn:#fbbf24;--warn-bg:#3b2a06;--info-bg:#0c1a33;--shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1120;--panel:#111827;--panel-2:#0f172a;--ink:#e5e7eb;--muted:#94a3b8;--line:#1f2937;--side:#020617;--side-hover:#111827;--accent:#f87160;--accent-soft:#3a1e1a;--gold:#facc15;--gold-soft:#332a0c;--blue:#60a5fa;--blue-soft:#172554;--ok:#4ade80;--ok-bg:#052e16;--warn:#fbbf24;--warn-bg:#3b2a06;--info-bg:#0c1a33;--shadow:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:8px}
+h1,h2,h3,h4{font-family:var(--font-display);text-wrap:balance;line-height:1.2;margin:0;letter-spacing:-.015em}
+h2{font-size:1.6rem;font-weight:800}
+h3{font-size:1.02rem;font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.num{font-variant-numeric:tabular-nums}
+
+/* shell */
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100%}
+.sidebar{position:sticky;top:0;height:100vh;height:100dvh;background:linear-gradient(180deg,#0b1f3a 0%,#163a63 60%,#1d4e7a 100%);color:var(--side-ink);padding:16px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;z-index:40}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;border-bottom:1px solid #1e293b;margin-bottom:6px}
+.brand .logo{width:36px;height:36px;border-radius:10px;background:#fff;display:grid;place-items:center;flex:0 0 auto}
+.brand .logo i{width:14px;height:14px;border-radius:50%;background:#c8372d;display:block}
+.brand b{color:#fff;font-size:.98rem;display:block}
+.brand span{font-size:.75rem;color:#94a3b8}
+.navgroup{font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;padding:14px 10px 4px}
+.navlink{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--side-ink);font-weight:600;font-size:.9rem}
+.navlink:hover{background:var(--side-hover);text-decoration:none;color:#fff}
+.navlink svg{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.navlink.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 #c8372d}
+.side-foot{margin-top:auto;font-size:.74rem;color:#64748b;padding:12px 10px 0}
+.main-col{min-width:0}
+.topbar{display:none}
+.scrim{display:none}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;width:270px;transform:translateX(-105%);transition:transform .25s ease;box-shadow:0 0 40px rgba(0,0,0,.3)}
+  body.menu-open .sidebar{transform:none}
+  body.menu-open .scrim{display:block;position:fixed;inset:0;background:rgba(2,6,23,.45);z-index:35}
+  .topbar{display:flex;position:sticky;top:0;z-index:30;align-items:center;gap:10px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));background:linear-gradient(90deg,#0b1f3a,#1d4e7a);color:#fff}
+  .topbar button{border:0;background:#1e293b;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;cursor:pointer;color:#fff}
+  .topbar button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .topbar b{font-size:1rem}
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+section.page{display:none;padding:22px 0 40px}
+section.page.on{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:.5}to{opacity:1}}
+
+/* cover banner */
+.cover{position:relative;border-radius:16px;overflow:hidden;min-height:190px;display:flex;align-items:flex-end;margin-bottom:18px;background:#0f172a center/cover no-repeat;background-image:linear-gradient(180deg,rgba(15,23,42,.05) 20%,rgba(15,23,42,.78) 100%),var(--img)}
+.cover .in{padding:22px;color:#fff}
+.cover .kicker{color:#fcd34d!important}
+.cover h1,.cover h2{color:#fff}
+.cover .credit{position:absolute;right:10px;top:8px;font-size:.68rem;color:rgba(255,255,255,.75)}
+.cover.big{min-height:300px}
+.cover.big h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;letter-spacing:-.03em}
+.cover p{margin:.3rem 0 .6rem;color:#e2e8f0}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.kicker{font-weight:700;color:var(--accent);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;position:relative;box-shadow:var(--shadow)}
+.card h3{margin-bottom:.45rem}
+.stat{font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.kpi .muted.small{text-transform:uppercase;letter-spacing:.06em;font-size:.7rem;font-weight:700}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap}
+.s-confirmed,.s-fact{background:var(--ok-bg);color:var(--ok)}
+.s-suggested{background:var(--blue-soft);color:var(--blue)}
+.s-estimated{background:var(--panel-2);color:var(--muted);border:1px solid var(--line)}
+.s-verify{background:var(--warn-bg);color:var(--warn)}
+.s-book{background:var(--accent-soft);color:var(--accent)}
+.s-sample{background:var(--line);color:var(--muted)}
+
+.note{background:var(--info-bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.9rem}
+.note.warn{background:var(--warn-bg)}
+.note.pink{background:var(--gold-soft)}
+ul.clean{list-style:none;padding:0;margin:0}
+ul.tight{margin:.3rem 0;padding-left:1.15rem}
+ul.tight li{margin:.2rem 0}
+
+details{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:var(--shadow)}
+details+details{margin-top:10px}
+details>summary{cursor:pointer;list-style:none;padding:13px 16px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;flex:0 0 auto}
+details[open]>summary::after{transform:rotate(-135deg)}
+details .body{padding:0 16px 16px}
+
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);background:var(--accent);color:#fff;padding:9px 15px;border-radius:9px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit}
+.btn:hover{text-decoration:none;filter:brightness(1.07)}
+.btn.ghost{background:rgba(255,255,255,.12);color:inherit;border-color:currentColor}
+.card .btn.ghost,.note .btn.ghost,.pager .btn.ghost{background:var(--panel);color:var(--ink);border-color:var(--line)}
+.btn.sm{padding:6px 11px;font-size:.8rem}
+
+.route{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.route .stop{display:block;border-radius:12px;overflow:hidden;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);color:var(--ink)}
+.route .stop:hover{text-decoration:none;border-color:var(--accent)}
+.route .stop .ph{height:78px;background:#0f172a center/cover}
+.route .stop .tx{padding:8px 10px}
+.route .stop b{display:block;font-size:.88rem}
+
+.check{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.check:last-child{border-bottom:0}
+.check input{width:20px;height:20px;margin-top:1px;accent-color:var(--accent);flex:0 0 auto}
+.check label{flex:1;cursor:pointer}
+.check .tag{font-size:.66rem;font-weight:700;padding:1px 7px;border-radius:5px;margin-left:4px;vertical-align:1px}
+.tag.must{background:var(--accent-soft);color:var(--accent)}
+.tag.opt{background:var(--blue-soft);color:var(--blue)}
+.progress{height:8px;border-radius:999px;background:var(--line);overflow:hidden}
+.progress>i{display:block;height:100%;background:var(--accent);width:0;border-radius:999px}
+
+.stay .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:.87rem;margin:.6rem 0}
+.facts dt{color:var(--muted);font-weight:600}
+.facts dd{margin:0}
+.price{font-weight:800;font-size:1.3rem;letter-spacing:-.02em}
+.rec{border:2px solid var(--accent)}
+.rec-flag{position:absolute;top:-11px;right:14px;background:var(--accent);color:#fff;font-weight:700;font-size:.72rem;padding:3px 9px;border-radius:6px}
+
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;background:var(--panel-2)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+
+/* itinerary: day tabs + panel */
+.daytabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:thin}
+.daytab{flex:0 0 auto;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:12px;padding:8px 12px;cursor:pointer;font-family:inherit;text-align:left;min-width:92px;box-shadow:var(--shadow)}
+.daytab b{display:block;font-size:1.15rem;font-weight:800}
+.daytab span{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase}
+.daytab small{display:block;font-size:.72rem;color:var(--muted);max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.daytab[aria-selected="true"]{background:linear-gradient(135deg,#0b1f3a,#1d4e7a);color:#fff;border-color:#0b1f3a}
+.daytab[aria-selected="true"] span,.daytab[aria-selected="true"] small{color:#cbd5e1}
+.dayhero{border-radius:14px;overflow:hidden;min-height:210px;display:flex;align-items:flex-end;background:#0f172a center/cover;margin-bottom:14px}
+.dayhero .in{padding:18px;color:#fff;width:100%;background:linear-gradient(180deg,transparent,rgba(15,23,42,.85))}
+.dayhero h3{font-size:1.35rem;color:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:6px;padding:3px 8px;font-size:.75rem;font-weight:600}
+.walk{display:inline-flex;gap:2px;vertical-align:-2px}
+.walk i{width:6px;height:12px;border-radius:2px;background:rgba(255,255,255,.3)}
+.walk i.on{background:#fff}
+.timeline{display:grid;gap:10px}
+.tl{display:grid;grid-template-columns:92px 1fr;gap:12px;align-items:start}
+.tl b{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding-top:2px}
+@media(max-width:560px){.tl{grid-template-columns:1fr;gap:2px}}
+.slot{display:grid;grid-template-columns:110px 1fr;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.slot:last-child{border:0}
+.slot b{font-size:.82rem;color:var(--muted)}
+@media(max-width:520px){.slot{grid-template-columns:1fr;gap:2px}}
+.meal{display:flex;gap:12px;align-items:center}
+.meal{align-items:flex-start}.meal img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex:0 0 auto;background:var(--line)}.meal a{font-weight:700}
+
+.bud-row{display:grid;grid-template-columns:1.6fr 1fr .9fr .9fr;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.bud-row input,.bud-row select,.inp,.who select{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+@media(max-width:640px){.bud-row{grid-template-columns:1fr 1fr}.bud-row .lbl{grid-column:1/-1}}
+.bars .bar{display:grid;grid-template-columns:120px 1fr 90px;gap:8px;align-items:center;font-size:.84rem;margin:6px 0}
+.bars .bar>span:nth-child(2){height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.bars .bar>span:nth-child(2)>i{display:block;height:100%;background:var(--blue);border-radius:999px}
+.seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--ink);padding:7px 12px;font:inherit;font-weight:600;font-size:.86rem;cursor:pointer;border-radius:7px}
+.seg button[aria-pressed="true"]{background:var(--panel);box-shadow:var(--shadow);color:var(--accent)}
+
+.store-card h3{display:flex;align-items:center;gap:8px}
+.store-dot{width:12px;height:12px;border-radius:4px}
+.src li{margin:.3rem 0}
+.foot{padding:10px 0 50px;color:var(--muted);font-size:.82rem}
+.hero-card,.fuji-art{display:none}
+
+#printSummary{display:none}
+body.print-mode > *:not(#printSummary){display:none!important}
+body.print-mode #printSummary{display:block;padding:20px}
+@media print{.sidebar,.topbar,.no-print,.cover,.dayhero{display:none!important}.app{display:block}section.page{display:block!important}body{background:#fff;color:#000;font-size:11pt}.card,details{box-shadow:none;background:#fff;border-color:#ccc;break-inside:avoid}}
+.pic{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;background:#eef1fb;color:#2b3a8c;text-decoration:none;white-space:nowrap;margin-left:2px}.pic:hover{background:#dfe5fa}
+.lk{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.lk a{font-size:13px;padding:7px 12px;border-radius:10px;background:#eef1fb;color:#2b3a8c;text-decoration:none;font-weight:600}.lk a.p{background:#c8402f;color:#fff}
+.shop-hd{display:flex;align-items:center;justify-content:space-between;gap:8px}.shop-hd h3{margin:0}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.shop-cat{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#64748b);margin:14px 0 8px}
+.itm{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);text-decoration:none;transition:.15s}
+.itm:hover{text-decoration:none;border-color:var(--accent);transform:translateY(-1px);box-shadow:var(--shadow)}
+.itm .em{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eef1fb;font-size:18px}
+.itm .t{flex:1;min-width:0;line-height:1.25}.itm .t b{display:block;font-size:.88rem}.itm .t span{font-size:.75rem;color:var(--muted,#64748b)}
+.itm .go{flex:none;font-size:12px;color:#2b3a8c;opacity:.7}
+.owe-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.owe-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 8px;border:2px solid var(--line);border-radius:18px;background:var(--panel);font:inherit;color:var(--ink);cursor:pointer;transition:.15s;box-shadow:var(--shadow)}
+.owe-btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.owe-btn.on{border-color:var(--accent);background:#fff4f1}
+.owe-btn b{font-size:.9rem;text-align:center}
+.owe-av{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:#eef1fb}
+.owe-av.big{width:72px;height:72px;font-size:40px;flex:none}
+.owe-empty{text-align:center;padding:18px 0}
+.owe-hero{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.owe-amt{font-size:2rem;font-weight:800;line-height:1.1;color:var(--accent)}
+.owe-list{display:grid;gap:8px}
+.owe-row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#f6f7fb}
+.owe-row .oi{font-size:22px}.owe-row .ot{flex:1;font-weight:600}.owe-row .ov{font-weight:800}
+.owe-more{margin-top:12px}.owe-more summary{cursor:pointer;font-weight:600;font-size:.9rem}
+table.mini td{padding:4px 6px;font-size:.8rem}
+@media(max-width:520px){.owe-av{width:48px;height:48px;font-size:26px}.owe-btn{padding:12px 4px}.owe-amt{font-size:1.6rem}}
+.stopw{display:flex;flex-direction:column;gap:4px}.stopw .itm{flex:1}
+
+/* ===== friendly, simple look ===== */
+body{font-size:16px}
+h2{font-size:1.75rem}
+h3{font-size:1.1rem}
+.card{border-radius:20px;padding:20px;border-color:transparent;box-shadow:0 2px 6px rgba(15,23,42,.05),0 10px 30px rgba(15,23,42,.06)}
+.cover{border-radius:24px}
+.wrap{padding:0 18px}
+.navgroup{color:#93a7c4}
+.navlink{padding:11px 12px;border-radius:12px;font-size:.98rem}
+.navlink .ne{font-size:20px;width:26px;text-align:center;flex:none}
+.brand .logo{font-size:20px}
+.side-foot{color:#93a7c4;font-size:.8rem}
+.big-q{font-size:1.35rem;margin:28px 0 12px}
+.hello{display:grid;grid-template-columns:1fr 2fr;gap:14px}
+.hello .card{display:flex;gap:14px;align-items:center}
+.hello .stat{font-size:2.2rem;color:var(--accent)}
+.bt-e{font-size:34px;line-height:1;flex:none}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.bigtile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px 12px;min-height:130px;border-radius:20px;background:var(--panel);color:var(--ink);box-shadow:0 2px 6px rgba(15,23,42,.05),0 10px 30px rgba(15,23,42,.06);transition:.15s;border:2px solid transparent}
+.bigtile:hover{text-decoration:none;transform:translateY(-3px);border-color:var(--accent)}
+.bigtile .bt-e{font-size:40px}
+.bigtile b{font-size:.98rem;line-height:1.25}
+.btn{border-radius:14px;padding:12px 18px;font-size:.95rem}
+details{border-radius:18px;border-color:transparent;box-shadow:0 2px 6px rgba(15,23,42,.05),0 10px 30px rgba(15,23,42,.06)}
+details>summary{padding:16px 18px;font-size:1rem}
+.note{border-radius:16px;border:0;padding:14px 16px;font-size:.95rem}
+.pill{border-radius:999px;padding:4px 10px}
+.daytab{border-radius:16px;padding:10px 14px;min-width:100px;border-color:transparent}
+.daytab b{font-size:1.4rem}
+.dayhero{border-radius:22px;min-height:230px}
+.dayhero h3{font-size:1.6rem}
+.itm{border-radius:16px;padding:12px 14px;border-color:transparent;background:var(--panel-2)}
+.itm .em{width:42px;height:42px;font-size:22px;border-radius:12px;background:var(--panel)}
+.itm .t b{font-size:.95rem}
+.shop-cat{font-size:.95rem;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:800}
+.route .stop{border-radius:16px;border-color:transparent}
+.route .stop .ph{height:90px}
+th{background:transparent}
+table{font-size:.92rem}
+@media(max-width:700px){.hello{grid-template-columns:1fr}.tiles{grid-template-columns:repeat(2,1fr)}.bigtile{min-height:115px;padding:16px 10px}.big-q{font-size:1.2rem}}
+.gs-part{font-weight:800;font-size:1.05rem;margin:18px 0 8px;padding:8px 12px;border-radius:12px;background:var(--panel-2)}
+.gs{display:grid;grid-template-columns:40px 1fr 120px;gap:12px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--line)}
+.gs:last-child{border-bottom:0}
+.gs-n{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center}
+.gs-b>b{display:block;font-size:1rem;margin-bottom:2px}.gs-b p{margin:0;font-size:.92rem;color:var(--ink)}
+.gs-img{width:120px;height:150px;object-fit:cover;border-radius:12px}
+.gs:not(:has(.gs-img)){grid-template-columns:40px 1fr}
+@media(max-width:600px){.gs{grid-template-columns:36px 1fr}.gs-img{grid-column:2;width:100%;height:auto;max-height:340px}}
+.shopitm{padding:10px}
+.pimg{position:relative;flex:none;width:64px;height:64px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 1px 4px rgba(15,23,42,.12)}
+.pimg img{width:100%;height:100%;object-fit:cover;display:block}
+.pimg i{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:9px;font-weight:700;text-align:center;color:#fff;background:rgba(15,23,42,.55);padding:1px 0}
+.brand .logo.flag{width:40px;height:28px;border-radius:5px;background:#fff;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}.brand .logo.flag i{width:16px;height:16px;border-radius:50%;background:#bc002d;display:block}
+.navlink{padding:10px 14px}
+.combos{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.combo{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:18px;background:var(--panel);box-shadow:0 2px 6px rgba(15,23,42,.05),0 10px 30px rgba(15,23,42,.06)}
+.cimgs{display:flex;flex:none}.cimgs .cimg+.cimg{margin-left:-18px}
+.cimg{position:relative;width:72px;height:72px;border-radius:16px;overflow:hidden;border:3px solid var(--panel);box-shadow:0 1px 4px rgba(15,23,42,.15);display:block}
+.cimg img{width:100%;height:100%;object-fit:cover;display:block}
+.cimg i{position:absolute;left:0;right:0;bottom:0;font-style:normal;font-size:9px;font-weight:700;text-align:center;color:#fff;background:rgba(15,23,42,.55)}
+.ct b{display:block;margin-bottom:2px}.ct p{margin:2px 0;font-size:.9rem}
+.dq{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px dashed var(--line)}.dq:last-child{border-bottom:0}
+.dq-e{font-size:26px;line-height:1;flex:none;width:34px;text-align:center}
+.dq>div{flex:1}.dq b{display:block}.dq p{margin:2px 0 0;font-size:.92rem;color:var(--muted)}
+.dq .pill{flex:none;margin-top:2px}
+.dq.done b{color:var(--ok)}
+.flights{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fl{background:var(--panel);border-radius:18px;padding:14px 16px;box-shadow:0 2px 6px rgba(15,23,42,.05),0 10px 30px rgba(15,23,42,.06)}
+.fl-d{display:block;font-size:.8rem;color:var(--muted);font-weight:700}.fl b{font-size:1.02rem}
+.route.strip{display:flex;overflow-x:auto;gap:10px;padding-bottom:6px;scroll-snap-type:x mandatory}
+.route.strip .stop{flex:0 0 140px;scroll-snap-align:start}
+.hello .stat{line-height:1}
+@media(max-width:700px){.flights{grid-template-columns:1fr}}
+.i3d{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 4px 6px rgba(15,23,42,.18))}
+.bigtile .bt-e{width:58px;height:58px}
+.hello .bt-e{width:48px;height:48px}
+.owe-av{background:transparent!important}.owe-av .i3d{width:80%;height:80%}
+/* playful tiles */
+.bigtile{position:relative;overflow:hidden;border:0;border-radius:26px;box-shadow:0 6px 0 var(--tc2),0 10px 24px rgba(15,23,42,.08);background:var(--tc1);transition:transform .15s,box-shadow .15s}
+.bigtile:hover,.bigtile:active{transform:translateY(-4px) scale(1.02);box-shadow:0 10px 0 var(--tc2),0 14px 28px rgba(15,23,42,.12);border:0}
+.bigtile b{color:#1f2a44;font-weight:800}
+.bigtile .bt-e{width:72px;height:72px;border-radius:50%;background:#fff;display:grid;place-items:center;padding:10px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.06)}
+.bigtile:hover .bt-e{animation:bob .6s ease}
+@keyframes bob{0%,100%{transform:translateY(0)}40%{transform:translateY(-6px) rotate(-6deg)}70%{transform:translateY(0) rotate(4deg)}}
+.bigtile::after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.35);top:-30px;right:-30px}
+.c1{--tc1:#cfe8ff;--tc2:#8cc4ff}.c2{--tc1:#ffe3b8;--tc2:#ffbd5c}.c3{--tc1:#d3f5d6;--tc2:#7fd889}.c4{--tc1:#e3dbff;--tc2:#a996ff}
+.c5{--tc1:#d6f7ec;--tc2:#6fd8b4}.c6{--tc1:#ffd9cf;--tc2:#ff9a7f}.c7{--tc1:#fff3b0;--tc2:#f5cf3b}.c8{--tc1:#d9ecff;--tc2:#6fb1f2}
+.c9{--tc1:#e4f6ff;--tc2:#7cd3f7}.c10{--tc1:#e0f0e3;--tc2:#8fcf9b}
+:root[data-theme="dark"] .bigtile b{color:#1f2a44}
+@media (prefers-color-scheme: dark){.bigtile b{color:#1f2a44}}
+.owe-btn[class*=" c"]{background:var(--tc1);border:0;border-radius:24px;box-shadow:0 6px 0 var(--tc2)}.owe-btn[class*=" c"].on{outline:3px solid var(--tc2);background:var(--tc1)}.owe-btn b{color:#1f2a44}.owe-btn .owe-av{background:#fff!important}
+/* tile sizing + breathing room */
+.tiles{gap:20px 16px;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));padding:4px 2px 8px}
+.bigtile{min-height:0;padding:16px 10px 14px;gap:8px;border-radius:22px}
+.bigtile .bt-e{width:54px;height:54px;padding:8px}
+.bigtile b{font-size:.9rem}
+.bigtile::after{width:70px;height:70px;top:-26px;right:-26px}
+@media(max-width:700px){.tiles{grid-template-columns:repeat(2,1fr);gap:26px 22px}.bigtile{min-height:0;padding:14px 8px 12px}.bigtile .bt-e{width:50px;height:50px}}
+@media(min-width:900px){.tiles{grid-template-columns:repeat(5,1fr)}}
+/* more breathing room */
+#overview .wrap{padding:0 22px}
+#overview .cover{margin-bottom:24px}
+.hello{gap:18px;margin-bottom:8px}
+.hello .card{padding:22px 24px}
+.big-q{margin:40px 0 18px}
+.tiles{gap:26px 22px}
+.flights{gap:18px}
+.fl{padding:18px 20px}
+.route.strip{gap:16px}
+@media(max-width:700px){#overview .wrap{padding:0 20px}.tiles{gap:26px 22px}.hello{gap:16px}.big-q{margin:36px 0 16px}}
+/* white tiles, tinted next-step */
+.bigtile{background:#fff;box-shadow:0 2px 6px rgba(15,23,42,.05),0 8px 22px rgba(15,23,42,.07)}
+.bigtile:hover,.bigtile:active{box-shadow:0 4px 10px rgba(15,23,42,.08),0 14px 30px rgba(15,23,42,.10)}
+.bigtile::after{display:none}
+.bigtile .bt-e{background:var(--tc1);box-shadow:none}
+.hello .card.next{background:linear-gradient(135deg,#fdf0ea 0%,#fbf5ee 100%);box-shadow:none;border:1px solid #f4dfd3}
+.hello .card.next .muted{color:#b4573f}
+.pm-total{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;background:linear-gradient(135deg,#eef5ff,#f6f2ff);box-shadow:none;border:1px solid #dfe6f5}
+.pm-big{font-size:2.4rem;font-weight:800;color:var(--accent);line-height:1.1}
+.pm-php{font-weight:700;font-size:1.05rem}
+.pm-row{display:grid;grid-template-columns:1fr 130px 80px;gap:10px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line);font-size:.95rem}
+.pm-row:last-child{border:0}.pm-e{display:inline-block;width:28px}
+.pm-in{display:flex;align-items:center;gap:4px;font-size:.85rem;color:var(--muted)}.pm-in input{padding:7px 8px}
+.pm-php2{text-align:right;color:var(--muted);font-size:.85rem}
+.pm-sub{font-weight:600;border-bottom:0}
+@media(max-width:560px){.pm-row{grid-template-columns:1fr 110px}.pm-php2{display:none}.pm-sub span:last-child{grid-column:2}}
+.kyhs{display:grid;gap:10px}
+.kyh{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--panel-2);color:var(--ink);text-decoration:none}
+.kyh:hover{text-decoration:none;outline:2px solid var(--accent)}
+.kyh b{display:block}.kyh span{font-size:.85rem;color:var(--muted)}
+.kyp{text-align:right;font-weight:800;white-space:nowrap}.kyp small{display:block;font-weight:500;color:var(--muted);font-size:.72rem}
+.kyinfo{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.kyinfo .card b{display:block;font-size:1.05rem;margin:2px 0}
+@media(max-width:700px){.kyinfo{grid-template-columns:1fr}}
+.opt{font-family:"Caveat",cursive;font-style:normal;font-weight:400;font-size:1.15em;opacity:.75;letter-spacing:.01em}
+.spot{display:flex;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line)}.spot:last-of-type{border-bottom:0}.spot img{width:130px;height:100px;object-fit:cover;border-radius:14px;flex:none}.spot>div>b{display:block;margin-bottom:4px}.spot p{margin:4px 0}
+@media(max-width:560px){.spot{flex-direction:column}.spot img{width:100%;height:180px}}
+.loop{margin-top:12px;padding:12px 14px;border-radius:14px;background:#eef5ff;font-size:.92rem}
+</style>
+</head>
+<body>
+
+<div class="scrim" id="scrim"></div>
+<div class="app">
+<aside class="sidebar" id="sidebar" aria-label="Sections">
+  <div class="brand"><div class="logo flag"><i></i></div><div><b>Tokyo Trip 2027</b><span>Apr 13–21 · 6 friends</span></div></div>
+  <div class="navgroup">Start here</div><a class="navlink" href="#overview" data-v="overview"><span>Home</span></a><a class="navlink" href="#itinerary" data-v="itinerary"><span>Day by Day</span></a><a class="navlink" href="#kyoto" data-v="kyoto"><span>Kyoto <em class="opt">(optional)</em></span></a><a class="navlink" href="#fuji" data-v="fuji"><span>Fuji &amp; Snow</span></a><a class="navlink" href="#stay" data-v="stay"><span>Our House</span></a><div class="navgroup">Get ready</div><a class="navlink" href="#before" data-v="before"><span>To-Do List</span></a><a class="navlink" href="#visa" data-v="visa"><span>Visa</span></a><a class="navlink" href="#arrival" data-v="arrival"><span>Landing in Tokyo</span></a><div class="navgroup">Money & fun</div><a class="navlink" href="#budget" data-v="budget"><span>Pocket Money</span></a><a class="navlink" href="#balances" data-v="balances"><span>Who Owes Mabs</span></a><a class="navlink" href="#wear" data-v="wear"><span>What to Wear</span></a><a class="navlink" href="#food" data-v="food"><span>Food &amp; 7-Eleven</span></a><a class="navlink" href="#shopping" data-v="shopping"><span>Shopping &amp; Pasalubong</span></a><div class="navgroup">Other</div><a class="navlink" href="#decide" data-v="decide"><span>Still to Decide</span></a><a class="navlink" href="#sources" data-v="sources"><span>Sources</span></a>
+  
+</aside>
+<div class="main-col">
+<div class="topbar"><button type="button" id="menuBtn" aria-label="Open menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><b id="topTitle">Home</b></div>
+<main>
+<!-- OVERVIEW -->
+<section class="page" id="overview">
+  <div class="wrap">
+    <div class="cover big" style="--img:url(img/fuji.jpg)">
+      <span class="credit">Photo: Manuel Cosentino / Unsplash</span>
+      <div class="in">
+        <div class="kicker">Hello, y'all! 👋</div>
+        <h1>We're going to Japan! 🇯🇵</h1>
+        <p><b>April 13–21, 2027</b></p>
+      </div>
+    </div>
+
+    <div class="hello">
+      <div class="card count"><div><div class="stat num" id="countdown">–</div><div class="small muted">until we fly</div></div></div>
+      <div class="card next"><div><div class="small muted">Next step</div><b>Early December: visa papers with Attic Tours</b></div></div>
+    </div>
+
+    <h2 class="big-q">Tap where you want to go</h2>
+    <div class="tiles"><a class="bigtile c1" href="#itinerary"><span class="bt-e"><img class="i3d" src="img/i/calendar.webp" alt=""></span><b>Day by day</b></a><a class="bigtile c2" href="#stay"><span class="bt-e"><img class="i3d" src="img/i/house.webp" alt=""></span><b>Our house</b></a><a class="bigtile c3" href="#before"><span class="bt-e"><img class="i3d" src="img/i/check.webp" alt=""></span><b>To-do list</b></a><a class="bigtile c4" href="#visa"><span class="bt-e"><img class="i3d" src="img/i/passport.webp" alt=""></span><b>Visa</b></a><a class="bigtile c5" href="#balances"><span class="bt-e"><img class="i3d" src="img/i/money.webp" alt=""></span><b>Who owes Mabs</b></a><a class="bigtile c6" href="#food"><span class="bt-e"><img class="i3d" src="img/i/bowl.webp" alt=""></span><b>Food</b></a><a class="bigtile c7" href="#shopping"><span class="bt-e"><img class="i3d" src="img/i/bags.webp" alt=""></span><b>Shopping</b></a><a class="bigtile c8" href="#wear"><span class="bt-e"><img class="i3d" src="img/i/coat.webp" alt=""></span><b>What to wear</b></a><a class="bigtile c9" href="#arrival"><span class="bt-e"><img class="i3d" src="img/i/arrival.webp" alt=""></span><b>Landing</b></a><a class="bigtile c10" href="#kyoto"><span class="bt-e"><img class="i3d" src="img/i/shrine.webp" alt=""></span><b>Kyoto <em class="opt">(optional)</em></b></a></div>
+
+    <h2 class="big-q">Our flights</h2>
+    <div class="flights">
+      <div class="fl"><span class="fl-d">Tue, Apr 13</span><b>Cebu 2:00 AM → Tokyo 8:10 AM</b></div>
+      <div class="fl"><span class="fl-d">Wed, Apr 21</span><b>Tokyo 8:55 AM → Cebu 1:15 PM</b></div>
+    </div>
+
+    <h2 class="big-q">Our days</h2>
+    <div class="route strip" id="routeBox"></div>
+
+    <details style="margin-top:22px"><summary><b>📋 More info (steps, labels, flight notes)</b></summary><div class="body">
+      <h3 style="margin:6px 0">All the steps, in order</h3><ol class="tight">
+          <li><b>Done:</b> Dragon Inn Tokyo booked ✓ <span class="pill s-confirmed">Confirmed</span></li><li><b>Done:</b> All passports valid ✓ <span class="pill s-confirmed">Confirmed</span></li><li><b>Now:</b> Ask the host about early bag drop (Apr 13) and the 4:45 AM checkout (Apr 21). <span class="pill s-verify">To verify</span></li>
+                    <li><b>Early Dec 2026:</b> Contact Attic Tours SM City Cebu; gather PSA + employment papers. <span class="pill s-book">To do</span></li>
+          <li><b>Jan 13–22, 2027:</b> Lodge visas, target Mon Jan 18 (everyone except Brian). <span class="pill s-book">To do</span></li>
+          <li><b>After approval (Feb):</b> Book Dumaguete ⇄ Cebu flights for 5. <span class="pill s-book">To book</span></li>
+          <li><b>March 2027:</b> Checked baggage, travel tax ₱1,620, travel insurance, Klook bookings. <span class="pill s-book">To pay</span></li>
+          <li><b>Apr 10–12:</b> eTravel QR (within 72 h of the flight). <span class="pill s-book">Required</span></li>
+        </ol>
+      <h3 style="margin:14px 0 6px">Flight notes</h3><div class="note warn small" style="margin-top:10px"><b>GO Basic fare:</b> no checked bag and no seat (buy add-ons in March). Hand carry max 10 kg. PH travel tax ₱1,620 is <b>not</b> in the fare (pay in March). Japan's departure tax is included. Both bookings are paid; amounts and booking references stay private.<br><b>Check:</b> the second ticket shows the 21 Apr return. If Dun Lee &amp; Jane fly home on Apr 22, confirm their separate return flight.</div>
+      <h3 style="margin:14px 0 6px">What the little labels mean</h3><ul class="clean stack small">
+          <li><span class="pill s-confirmed">Confirmed</span> Paid and booked. Only the flights so far.</li>
+          <li><span class="pill s-suggested">Suggested</span> Our recommendation, not booked.</li>
+          <li><span class="pill s-estimated">Estimated</span> Planning number, can change.</li>
+          <li><span class="pill s-verify">To verify</span> Needs a check with the official source or the host.</li>
+          <li><span class="pill s-book">To book</span> Someone needs to reserve or pay.</li>
+          <li><span class="pill s-fact">Verified</span> Checked against an official or primary source on Nov 11, 2026.</li>
+        </ul>
+      <p class="small" style="margin-top:12px"><b>Saving:</b> ticks and notes save only on your own phone or laptop. Mabs keeps the official version.</p>
+      <button class="btn ghost no-print" id="printBtn" type="button" style="margin-top:8px">🖨️ Print summary</button>
+    </div></details>
+    <div style="display:none"><span id="ovPP"></span><span id="ovPPnote"></span></div>
+  </div>
+</section>
+
+<!-- BEFORE WE FLY -->
+<section class="page" id="before">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/airport.jpg)"><span class="credit">Photo: David / Unsplash</span><div class="in"><div class="kicker">Before We Fly</div><h2>Countdown checklist</h2></div></div>
+    
+    <div class="card no-print" style="margin-bottom:14px">
+      <div><b>One checklist for all of y'all.</b> <span class="muted small">Ticks save on this device only.</span></div>
+      <div class="row" style="margin-top:12px"><div class="progress" style="flex:1"><i id="progBar"></i></div><b class="num" id="progTxt">0%</b></div>
+    </div>
+    <div id="checklistBox"></div>
+    <p class="small muted">Official links: <a href="https://etravel.gov.ph/">eTravel (etravel.gov.ph)</a> · <a href="https://www.vjw.digital.go.jp/">Visit Japan Web</a> · <a href="https://tieza.gov.ph/">TIEZA travel tax</a> · Last checked Nov 11, 2026.</p>
+  </div>
+</section>
+
+<!-- VISA -->
+<section class="page" id="visa">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/asakusa.jpg)"><span class="credit">Photo: Nicholas Doherty / Unsplash</span><div class="in"><div class="kicker">Visa · via Attic Tours</div><h2>Japan visa, the simple version</h2></div></div>
+    <div class="note pink" style="margin-bottom:14px"><b>Group decision:</b> we apply through <b>Attic Tours</b> (SM City Cebu branch). <b>Brian doesn't need a visa.</b> The other 5 apply together.</div>
+
+    <div class="grid g3">
+      <div class="card kpi"><div class="muted small">When we lodge</div><div class="stat" style="font-size:1.4rem">Jan 13–22, 2027</div><div class="small">Target: <b>Mon, Jan 18</b></div></div>
+      <div class="card kpi"><div class="muted small">Japan visa fee</div><div class="stat" style="font-size:1.4rem">₱0</div><div class="small">Free for Filipinos (tourist visa)</div></div>
+      <div class="card kpi"><div class="muted small">Attic Tours fee</div><div class="stat" style="font-size:1.4rem">Ask Attic</div><div class="small">Not published online</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;border:2px solid var(--accent)">
+      <h3>⚠️ Passport rule: no trips abroad while applying</h3>
+      <p class="small" style="margin:0">Attic Tours and the Japan Visa Centre keep your passport while the visa is processed. From the day we lodge (about <b>Jan 18</b>) until the passport is back (about <b>early–mid Feb</b>), <b>don't book any international trip</b>. Domestic flights are fine with a government ID.</p>
+    </div>
+
+    <h3 style="margin:22px 0 8px">Step by step</h3>
+    <div class="card tbl-wrap"><table>
+      <thead><tr><th>When</th><th>What we do</th></tr></thead>
+      <tbody>
+        <tr><td><b>Early Dec 2026</b></td><td><b>Message or call Attic Tours SM City Cebu.</b> Ask: (1) service fee per person, (2) appointment or walk-in, (3) their January lodging schedule, (4) can the Dumaguete folks submit by courier or through one person, (5) any document they want extra.</td></tr>
+        <tr><td><b>December 2026</b></td><td>Get PSA birth certificate (and marriage certificate if married), Certificate of Employment or business papers, ITR. Take 4.5 × 3.5 cm white-background photos.</td></tr>
+        <tr><td><b>Jan 4–12, 2027</b></td><td>Get a fresh bank certificate. Print the Dragon Inn booking and the flight itinerary. Re-confirm the drop-off day with Attic.</td></tr>
+        <tr><td><b>Mon, Jan 18, 2027</b></td><td><b>Submit everything at Attic Tours SM City Cebu</b> and pay their fee. Passports stay with them from here.</td></tr>
+        <tr><td><b>About early–mid Feb</b></td><td>Passports come back with the visa (several weeks, no guaranteed date).</td></tr>
+        <tr><td><b>Right after approval</b></td><td>Book Dumaguete ⇄ Cebu flights for 5 (Sharol is in Cebu, so not her).</td></tr>
+      </tbody>
+    </table></div>
+    <p class="small muted">Why not earlier than Jan 13? The visa is valid for 3 months from the day it's issued, so applying too early could make it expire before our trip.</p>
+
+    <h3 style="margin:22px 0 8px">How much it costs (per person)</h3>
+    <div class="card tbl-wrap"><table>
+      <tr><td>Japan visa fee</td><td class="n"><b>₱0</b></td><td class="small muted">Free for Philippine passport holders (Embassy of Japan)</td></tr>
+      <tr><td>Attic Tours service fee</td><td class="n"><span class="pill s-verify">Ask Attic</span></td><td class="small muted">Not published; ask in December and update here</td></tr>
+      <tr><td>PSA certificates</td><td class="n">≈ ₱155–₱365 each</td><td class="small muted">Walk-in vs online delivery (estimate)</td></tr>
+      <tr><td>Bank certificate</td><td class="n">≈ ₱100–₱300</td><td class="small muted">Depends on the bank (estimate)</td></tr>
+      <tr><td>Visa photos</td><td class="n">≈ ₱100–₱150</td><td class="small muted">Estimate</td></tr>
+      <tr><td>Trip to SM City Cebu (Dumaguete folks)</td><td class="n"><span class="pill s-verify">Depends</span></td><td class="small muted">Skip if Attic accepts courier or one person submitting for the group</td></tr>
+      <tr><td><b>Total</b></td><td class="n" colspan="2"><b>About ₱500–₱800 + Attic's fee</b> (+ travel to Cebu if needed)</td></tr>
+    </table></div>
+
+    <div class="row" style="margin-top:12px">
+      <a class="btn" href="https://attictours.asia">Open Attic Tours site ↗</a>
+      <a class="btn ghost" href="https://www.ph.emb-japan.go.jp/itpr_en/00_000035.html">Embassy visa page ↗</a>
+    </div>
+    <p class="small muted">Attic Tours SM City Cebu: 2nd Level, North Reclamation Area, Mabolo, Cebu City · (032) 239-8435 (phone from published guides; confirm on their site). Nothing is booked from this page.</p>
+
+    <h3 style="margin:22px 0 8px">Documents checklist</h3>
+    <p class="small muted">Pick your situation. Ticks save on this device only.</p>
+    <div class="card no-print">
+      <div class="seg" id="visaType">
+        <button type="button" data-v="employed">Employed</button>
+        <button type="button" data-v="self">Self-employed / freelancer</button>
+        <button type="button" data-v="sponsored">Sponsored by a guarantor</button>
+      </div>
+    </div>
+    <div class="card" id="visaList" style="margin-top:10px"></div>
+  </div>
+</section>
+
+<!-- STAY -->
+<section class="page" id="stay">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/city.jpg)"><span class="credit">Photo: Josh Soto / Unsplash</span><div class="in"><div class="kicker">Where We Stay</div><h2>Dragon Inn Tokyo · Booked ✓</h2></div></div>
+
+    <div class="card rec" style="margin-bottom:14px"><span class="rec-flag">Booked</span>
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div><h3><a href="https://www.airbnb.com/rooms/1404670321568554684">Dragon Inn Tokyo: 4-bedroom Japanese-style house ↗</a></h3>
+        <div class="small muted">Horikiri-Shobuen, Katsushika (east Tokyo) · 4.95 ★ (38)</div><div class="small" style="margin-top:4px">📍 5-4-6 Horikiri, Katsushika City, Tokyo 124-0006 · <a href="https://www.google.com/maps/search/?api=1&query=5-4-6%20Horikiri%2C%20Katsushika%20City%2C%20Tokyo%20124-0006">Open in Google Maps ↗</a></div>
+        <div class="row" style="margin-top:8px"><span class="pill s-confirmed">Confirmed</span><span class="pill s-suggested">Tue Apr 13 → Wed Apr 21 · 8 nights · 6 guests</span></div></div>
+        <div style="text-align:right"><div class="price num">₱73,410</div><div class="small muted">Airbnb total at booking time</div><div class="price num" style="font-size:1.05rem;margin-top:4px">≈ ₱12,235 each</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:12px">
+        <div class="note"><b>Who sleeps where</b>
+          <ul class="clean small" style="margin-top:4px">
+            <li><b>Bedroom 1 · 2nd floor:</b> Mabelle &amp; Brian</li>
+            <li><b>Bedroom 2 · 2nd floor:</b> Sharol</li>
+            <li><b>Bedroom 3 · loft:</b> Eman</li>
+            <li><b>Bedroom 4 · 1st floor:</b> Dun Lee &amp; Jane</li>
+          </ul>
+          <div class="small muted" style="margin-top:4px">Confirmed with the host: 2 full bathrooms, each with a shower ✓. The house has stairs, and Bedroom 3 is a loft.</div>
+        </div>
+        <dl class="facts" style="margin:0">
+          <dt>Station</dt><dd>2 min walk to Keisei Horikiri-Shobuen (Keisei Main Line: Ueno about 15 min; trains toward Narita)</dd>
+          <dt>Nearby</dt><dd>Convenience stores, supermarket, 100-yen shop, restaurants (host) · <a href="https://www.google.com/maps/search/?api=1&query=convenience+store+near+Horikiri-Shobuen+Station">map ↗</a></dd>
+          <dt>Wi-Fi</dt><dd>High-speed fiber + pocket Wi-Fi to take out</dd>
+          <dt>Bathrooms</dt><dd>2 full bathrooms, each with a shower ✓ (host confirmed)</dd><dt>Stairs</dt><dd>Yes, stairs inside. Carry big suitcases up only if needed; heavy bags can stay on the 1st floor.</dd><dt>Extras</dt><dd>Washer · kimonos/yukata to try on · no shoes inside</dd>
+          <dt>Private</dt><dd>Address, door code and booking reference stay in the Airbnb app, not on this page.</dd>
+        </dl>
+      </div>
+      <div class="note warn small" style="margin-top:12px"><b>Still to ask the host:</b> (1) can we drop bags around 10:30 AM on Apr 13, (2) is self check-out at about 4:45 AM on Apr 21 OK for our early flight. <span class="pill s-verify">To verify</span></div>
+    </div>
+
+    <div class="note pink" style="margin-top:14px">Tokyo lodging tax should be ₱0 for us: stays under ¥13,000 per person per night are exempt from April 2027. Fuji is a day trip, so no second property.</div>
+    <div class="card" style="margin-top:12px">
+      <h3>Dun Lee &amp; Jane after Apr 21</h3>
+      <p class="small">They'll book their own place for any nights after the group checks out on Apr 21. Not part of the group budget. <span class="pill s-suggested">Their own booking</span></p>
+    </div>
+
+    <details style="margin-top:18px">
+      <summary><h3>How we chose · other homes we compared</h3></summary>
+      <div class="body">
+        <p class="small">Airbnb, whole home, Apr 13–21, 2027, 6 adults, 3+ bedrooms, 2+ baths, checked Nov 11, 2026. Ranked by: real enclosed bedrooms → 2 full bathrooms → stairs/elevator → station → price. Kept for reference only.</p>
+        <div class="grid g2" id="stayCards"></div>
+        <h3 style="margin:20px 0 8px">Your Airbnb wishlist, checked against our rules</h3>
+        <div class="tbl-wrap"><table><thead><tr><th>Listing</th><th class="n">8 nights</th><th>Verdict</th></tr></thead><tbody id="wishList"></tbody></table></div>
+        <h3 style="margin:20px 0 8px">Close, but they missed a must-have</h3>
+        <div class="tbl-wrap"><table><thead><tr><th>Listing</th><th class="n">8 nights</th><th>Why not</th></tr></thead><tbody id="nearList"></tbody></table></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ITINERARY -->
+<section class="page" id="itinerary">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/shibuya.jpg)"><span class="credit">Photo: Jezael Melgoza / Unsplash</span><div class="in"><div class="kicker">Daily Itinerary</div><h2>Day by day <span class="pill s-suggested" style="vertical-align:middle">Suggested</span></h2></div></div>
+    <div class="sec-head">
+</div>
+    <details style="margin-bottom:14px"><summary><b>🌸 Will there be cherry blossoms? (+ how this plan works)</b></summary><div class="body small"><b>Cherry blossoms:</b> Tokyo's main bloom is usually late March to early April, so most will likely be finished by April 13. Late-blooming double cherries and the cooler Fuji area may still have some. No promises. Weekdays are grouped by area so we don't zig-zag across Tokyo. Restaurant picks are suggestions: check hours and queues on Google Maps. Costs are per person in yen and are estimates. Based on an east-Tokyo home base (Asakusa/Katsushika area).</div></details>
+    <div id="days"></div>
+  </div>
+</section>
+
+<!-- FUJI & SNOW -->
+<section class="page" id="fuji">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/kawaguchiko.jpg)"><span class="credit">Photo: Joshua Tan / Unsplash</span><div class="in"><div class="kicker">Fuji &amp; Snow</div><h2>Mt. Fuji day trip · Saturday, April 17</h2></div></div>
+    
+    <div class="note" style="margin-bottom:12px">No overnight: we go and come back the same day, so suitcases stay at the Tokyo home. Expect a long day (about 7:30 AM to 7–8 PM). Fuji hides behind clouds often; tours still run, so pick one with free cancellation and check the forecast 2 days before.</div>
+    <div class="grid g3">
+      <div class="card rec"><span class="rec-flag">Best value for 6</span>
+        <h3><a href="https://www.klook.com/activity/93901-mtfuji-one-day-tour-tokyo/">Klook bus day tour ↗</a></h3>
+        <p class="small muted">"Mount Fuji Internet-famous Attractions One-Day Tour" · 4.8 ★ (33.6K reviews) · departs Tokyo Station or Shinjuku</p>
+        <p class="small">Stops: Chureito Pagoda (Arakurayama), Honcho-dori "ladder town" street, Oshino Hakkai springs, Lake Kawaguchiko, the famous Fuji-view Lawson.</p>
+        <div class="price">from about US$53 pp</div><p class="small muted">≈ ¥8,000–9,000. Price varies by date. Lunch usually not included.</p>
+      </div>
+      <div class="card">
+        <h3><a href="https://www.klook.com/en-PH/search/result/?query=mt%20fuji%20private%20tour">Private van tour ↗</a></h3>
+        <p class="small muted">Klook private driver-guide tours, door to door</p>
+        <p class="small">Our own pace and stops. One 2026 review lists about US$417 per vehicle, so about US$70 each for 6. Good if we want hotel pickup and fewer crowds.</p>
+        <div class="price">≈ US$65–90 pp</div><p class="small muted">Compare 2–3 listings; check seats for 6 + bags.</p>
+      </div>
+      <div class="card">
+        <h3>DIY by highway bus</h3>
+        <p class="small muted">Busta Shinjuku → Kawaguchiko Station, about 1 h 45 min</p>
+        <p class="small">¥2,200 each way + local retro buses. Cheapest, but we handle timing and transfers ourselves.</p>
+        <div class="price">≈ ¥6,000 pp</div><p class="small muted">Plus small fees at stops.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Food on Fuji day</h3>
+      <ul class="tight small">
+        <li><b>Lunch (hidden gem):</b> <b>Yoshida udon</b>, Fujiyoshida's own super-chewy udon with horse-meat or beef and cabbage, usually under ¥500 a bowl. Our pick: <a href="https://www.google.com/maps/search/?api=1&query=2-12-9%20Asahi%2C%20Fujiyoshida%2C%20Yamanashi">Tsuruya Shokudo ↗</a>, a tiny family shop for about 70 years. Backups: <a href="https://www.google.com/maps/search/?api=1&query=5-5-9%20Shimoyoshida%2C%20Fujiyoshida%2C%20Yamanashi">Higashi-ura ↗</a> (inside a home) or <a href="https://www.google.com/maps/search/?api=1&query=Horibata%20Udon%2C%20Fujiyoshida%2C%20Yamanashi">Horibata Udon ↗</a> (in a quiet neighborhood). Bring cash, go before 12, and expect a Japanese-only menu; point at photos or say "niku udon".</li>
+        <li><b>Dinner back in Tokyo:</b> tours return to Shinjuku, so eat at <a href="https://www.google.com/maps/search/?api=1&query=Omoide%20Yokocho%2C%20Shinjuku%20City%2C%20Tokyo">Omoide Yokocho ↗</a> (tiny yakitori bars) or <a href="https://www.google.com/maps/search/?api=1&query=Fuunji%2C%20Yoyogi%2C%20Shibuya%20City%2C%20Tokyo">Fuunji tsukemen ↗</a>.</li>
+      </ul>
+    </div>
+
+    <div class="cover" style="--img:url(img/snow.jpg);margin-top:30px"><span class="credit">Illustrative photo: Brendan Beale / Unsplash</span><div class="in"><div class="kicker">Sunday, April 18</div><h2>Snow day: GALA Yuzawa (Niigata)</h2></div></div>
+    <div class="grid g2">
+      <div class="card taped">
+        <h3>Your pick: <span style="color:var(--red)">Sunday, April 18</span></h3>
+        <ul class="tight">
+          <li><b>From our house, board at Ueno, not Tokyo Station:</b> Keisei from Horikiri-Shobuen to Keisei Ueno is ≈15 min, then the same Shinkansen. Shinkansen straight to <b>GALA Yuzawa Station</b>, which is inside the ski center. About 75–90 min. Reserved seat about <b>¥7,010</b> each way. Not every train stops there; some end at Echigo-Yuzawa (shuttle to resort).</li>
+          <li><b>Sunday notes:</b> weekends are busier, so book Shinkansen seats early. Fuji (Sat) and snow (Sun) are two early starts in a row, so Monday is planned lighter. GALA is the easiest real-snow spot from Tokyo: the train stops inside the ski center.</li><li><b>Book on Klook:</b> <a href="https://www.klook.com/en-PH/search/result/?query=GALA%20Yuzawa">GALA Yuzawa packages ↗</a> (gondola, rentals, some with Shinkansen). Pick a date-flexible or free-cancellation one.</li><li><b>Cheapest way (for snow play, no skiing):</b> buy the round-trip Shinkansen yourself (≈¥14,000) + a <b>gondola-only</b> ticket at GALA (¥3,500 last season) + rent sled/boots there. Shinkansen + gondola packages start around ¥20,600, so they only save time, not money. A highway bus is cheaper but takes much longer and stops in Yuzawa town, not at GALA. The JR Tokyo Wide Pass (3 days) isn't worth it unless we use JR a lot on the other 2 days.</li>
+          <li>Last train from GALA may leave mid-afternoon in late season (about 15:56 in late April 2025). Check the timetable.</li>
+        </ul>
+      </div>
+      <div class="card taped blue">
+        <h3>What's confirmed vs. history</h3>
+        <ul class="tight">
+          <li><span class="pill s-verify">To verify</span> 2026–27 ski season is <b>planned Dec 19, 2026 – May 5, 2027</b>, subject to snow (reported from GALA's announcement). South Area closed all season.</li>
+          <li><span class="pill s-estimated">History</span> In spring 2026, snow melted early: <b>ski runs ended April 12, 2026</b>, but gondola sightseeing ran until May 6. The "Snow Play Package" wasn't offered that season; visitors bought a gondola ticket and rented a sled and boots on site.</li>
+          <li><span class="pill s-estimated">Last season prices</span> Gondola + Barouche sightseeing lift <b>¥5,000</b>; gondola only ¥3,500; sled rental about ¥2,000; boots about ¥1,000–¥2,000. Non-skiers can't use ski runs; sledding is only in the snow-play park.</li>
+          <li><span class="pill s-verify">To verify</span> A bundle (gondola + wear + boots + sled) is listed by a reseller for Dec 12, 2026 – May 5, 2027, about US$101, free cancellation until the day.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Snow day budget &amp; backup</h3>
+      <div class="grid g2">
+        <div>
+          <table><tr><td>Shinkansen round trip</td><td class="n">¥14,020</td></tr><tr><td>Gondola + lift</td><td class="n">¥5,000</td></tr><tr><td>Sled + boots rental</td><td class="n">¥3,000–¥4,000</td></tr><tr><td>Rental jacket/pants (if needed)</td><td class="n">≈ ¥4,000–¥6,000</td></tr><tr><td>Lunch</td><td class="n">¥2,000</td></tr><tr><td><b>Total per person</b></td><td class="n"><b>≈ ¥28,000–¥31,000</b> (≈₱11,200–₱12,400)</td></tr></table>
+        </div>
+        <div class="small">
+          <p><b>Wear:</b> waterproof jacket and pants, gloves (waterproof, not knit), warm socks, beanie, sunglasses (snow glare), boots with grip. Renting the jacket/pants and boots there beats buying gear we'll use once.</p>
+          <p><b>Go/no-go:</b> GALA posts if it's open on its official site at 6:00 AM. Check the night before and that morning. Buy flexible or refundable tickets.</p>
+          <p><b>Backup if no snow:</b> make Sunday a relaxed Tokyo day (Ueno Park, Yanaka old town, or teamLab) and drop the Shinkansen cost.</p><p><b>Food:</b> lunch at the GALA ski-center food court (Cheers / Cowabunga). Dinner around Ueno Station when we get back, then Keisei home.</p>
+        </div>
+      </div>
+    </div>
+  <div class="card" style="margin-top:18px">
+      <h3>📸 The TikTok photo spots: where they are</h3>
+      <div class="spot"><img src="img/pl/dream-bridge.jpg" alt="" loading="lazy"><div><b>Mt. Fuji Dream Bridge (Fujisan Yume no Ohashi)</b><p class="small">The stairs that look like they lead up to Fuji, and the bridge road facing it. <b>Where:</b> Route 139, Tadehara, Fuji City, Shizuoka (south side of Fuji, not Kawaguchiko). <b>Best shot:</b> from the south side of the staircase, or on the bridge sidewalk. Go early on a clear day.</p><p class="small muted">Please stay on the sidewalk and stairs: don't cross into the road or median, keep quiet, take trash home. Locals have complained and the city put up fences.</p><a class="pic" href="https://www.google.com/maps/search/?api=1&query=35.1514403%2C138.6760618">📍 Map ↗</a></div></div>
+      <div class="spot"><img src="img/pl/fuji-street.jpg" alt="" loading="lazy"><div><b>The street with Fuji at the end</b><p class="small">Fujiyoshida's streets line up with Mt. Fuji. The famous one is <b>Honcho-dori (Honcho 2-chome)</b>; quieter back streets near Gekkoji / Shimoyoshida stations have the same look. <b>Best shot:</b> from the sidewalk where the road curves, morning light.</p><p class="small muted">Never stand in the road for the photo. Wait for the green light at crossings.</p><a class="pic" href="https://www.google.com/maps/search/?api=1&query=3-13-13%20Shimoyoshida%2C%20Fujiyoshida%2C%20Yamanashi">📍 Map ↗</a></div></div>
+      <div class="spot"><img src="img/pl/yamanaka.jpg" alt="" loading="lazy"><div><b>The lakeside fence photo: Lake Yamanaka</b><p class="small">Fuji right across the water with a wooden lakeside fence. <b>Where:</b> north shore of Lake Yamanaka (Yamanakako), around <b>Nagaike Shinsui Park</b>, the classic viewpoint with a lakeside walking path. Swans live here too.</p><a class="pic" href="https://www.google.com/maps/search/?api=1&query=3222%20Hirano%2C%20Yamanakako%2C%20Yamanashi">📍 Map ↗</a></div></div>
+      <div class="loop"><b>🔁 Our Saturday loop (no going back):</b> Dragon Inn → Fuji Lawson → Chureito Pagoda → Honcho-dori → Yoshida udon lunch → Lake Yamanaka → Dream Bridge → home. Out on the Chuo Expressway, back on the Tomei Expressway.</div>
+      <p class="small muted" style="margin:10px 0 0">Fuji only shows on clear days, and mornings are clearest. Times between stops are estimates.</p>
+    </div>
+  </div>
+</section>
+
+<!-- KYOTO -->
+<section class="page" id="kyoto">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="kicker">Optional side trip · still undecided</div><h2>Kyoto (optional)</h2></div></div>
+    <div class="kyinfo">
+      <div class="card"><div class="small muted">When</div><b>Thu Apr 15 → Fri Apr 16</b><div class="small muted">1 night near Kyoto Station</div></div>
+      <div class="card"><div class="small muted">Train (each)</div><b>≈ ¥28,340 both ways</b><div class="small muted">Shinkansen, reserved seat</div></div>
+      <div class="card"><div class="small muted">Hotel (example: 3 people)</div><b>≈ ₱9,500–15,300</b><div class="small muted">2 rooms; more rooms if more of us go</div></div>
+    </div>
+    <p class="small muted" style="margin:14px 0">Who goes is still open: any of us, or the whole group. Anyone who stays follows the normal plan (Harry Potter + Shibuya on Apr 15, Asakusa on Apr 16). You meet again at Dragon Inn on the night of Apr 16. Big luggage stays at the house; bring a small overnight bag.</p>
+    <div class="daytabs no-print" role="tablist" style="margin-bottom:14px"><button class="daytab kytab" role="tab" data-i="0" type="button"><span>Thu · Apr</span><b>15</b><small>Shrines + Gion</small></button><button class="daytab kytab" role="tab" data-i="1" type="button"><span>Fri · Apr</span><b>16</b><small>Arashiyama → Tokyo</small></button></div>
+    <div id="kyPanel"></div>
+    <div class="card" style="margin-top:18px">
+      <h3>Hotel options · Thu Apr 15 → Fri Apr 16 <span class="pill s-book">To book</span></h3>
+      <p class="small muted" style="margin:4px 0 12px">Near Kyoto Station. Prices are for 2 rooms (3 people) as an example; check again once we know how many are going. Prices seen on Booking.com on Nov 13, 2026, all with free cancellation. Prices change daily; check before booking. Dragon Inn is already paid for this night, so this is an extra cost.</p>
+      <div class="kyhs"><a class="kyh" href="https://www.booking.com/hotel/jp/elite-inn-kyoto-station-eritoinjing-du-yi.html"><div><b>Elite Inn Kyoto Station</b><span>⭐ 8.4 · 2 queen rooms · cheapest</span></div><div class="kyp">₱9,534<small>for 3, 1 night</small></div></a><a class="kyh" href="https://www.booking.com/hotel/jp/piece-nanajo.html"><div><b>TUNE STAY Kyoto</b><span>⭐ 8.9 · 2 rooms · pay at the hotel</span></div><div class="kyp">₱11,036<small>for 3, 1 night</small></div></a><a class="kyh" href="https://www.booking.com/hotel/jp/sanco-inn-kyoto-hachijoguchi.html"><div><b>Sanco Inn Kyoto Hachijoguchi Shikinoyu</b><span>⭐ 8.7 · 2 double rooms · public bath · pay at the hotel</span></div><div class="kyp">₱12,724<small>for 3, 1 night</small></div></a><a class="kyh" href="https://www.booking.com/hotel/jp/vuiainjing-du-yi-ba-tiao-kou.html"><div><b>Via Inn Prime Kyotoeki Hachijoguchi</b><span>⭐ 9.0 · 1 double + 1 single · best fit · top rated</span></div><div class="kyp">₱15,328<small>for 3, 1 night</small></div></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- BUDGET -->
+<section class="page" id="budget">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="kicker">Budget</div><h2>Pocket money for Apr 13–21</h2></div>
+      <div class="seg no-print" id="scen"><button type="button" data-s="budget">Tipid</button><button type="button" data-s="comfy">Comfy</button></div></div>
+    <p class="muted" style="margin:0 0 16px">How much to bring <b>per person</b> for spending in Japan. Flights and the house are already paid, so they're not here. Kyoto side-trip costs are on the Kyoto page.</p>
+
+    <div class="pm-total card">
+      <div><div class="small muted">Bring about</div><div class="pm-big num" id="pmY">–</div><div class="pm-php num" id="pmP">–</div></div>
+      <div class="small muted" id="pmNote"></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="margin-bottom:6px">What it's for</h3>
+      <p class="small muted" style="margin:0 0 8px">Change any amount (¥ per person). It saves on your own phone only.</p>
+      <div id="pmRows"></div>
+      <div class="pm-row pm-sub"><span>Extra for surprises</span><span class="pm-in"><input class="inp num" id="pmBuf" type="number" min="0" max="50" step="5"> %</span><span class="num" id="pmBufY"></span></div>
+      <div class="row" style="margin-top:12px;justify-content:space-between"><label class="small">₱1 = ¥ <input class="inp num" id="rate" type="number" step="0.01" min="0.5" style="width:80px;display:inline-block"></label><button class="btn ghost sm no-print" id="resetBud" type="button">Reset</button></div>
+      <p class="small muted" style="margin:8px 0 0">Rate: ₱1 ≈ ¥2.50 (mid-market, Nov 2026). Your bank or card will give a little less. All amounts are estimates.</p>
+    </div>
+
+    <details style="margin-top:18px"><summary><b>💡 Cash or card?</b></summary><div class="body small">
+      <ul class="tight"><li>Bring about <b>¥30,000 cash</b> to start. Small shops, temples and some food stalls are cash only.</li><li>Use <b>Suica</b> for trains, konbini and vending machines.</li><li>Use a card for big buys (Don Quijote, Uniqlo, tours). Show your passport for tax-free.</li><li>7-Eleven ATMs take most foreign cards. If it asks to "convert to PHP", choose <b>No</b>.</li></ul>
+    </div></details>
+  </div>
+</section>
+
+
+<!-- BALANCES -->
+<section class="page" id="balances">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="kicker">Money</div><h2>Who owes Mabs</h2></div></div>
+    <p class="muted" style="margin:0 0 14px">Tap your name</p>
+    <div class="owe-pick">
+      <button class="owe-btn c2" data-p="eman"><span class="owe-av"><img class="i3d" src="img/i/bear.webp" alt=""></span><b>Eman</b></button>
+      <button class="owe-btn c6" data-p="sharol"><span class="owe-av"><img class="i3d" src="img/i/cat.webp" alt=""></span><b>Sharol</b></button>
+      <button class="owe-btn c4" data-p="dljane"><span class="owe-av"><img class="i3d" src="img/i/panda.webp" alt=""></span><b>Dun Lee &amp; Jane</b></button>
+    </div>
+    <div class="card owe-box">
+      <div class="owe-empty"><div style="width:56px;height:56px;margin:0 auto"><img class="i3d" src="img/i/up.webp" alt=""></div><p class="muted">Pick your name to see what you owe.</p></div>
+      <div class="owe-panel" data-p="eman" hidden>
+      <div class="owe-hero"><div class="owe-av big"><img class="i3d" src="img/i/bear.webp" alt=""></div><div><div class="small muted">Hi Eman! You owe Mabs</div><div class="owe-amt">₱22,569.12</div><div class="small muted">Paid so far: ₱0.00</div></div></div>
+      <div class="owe-list"><div class="owe-row"><span class="oi">🏠</span><span class="ot">Dragon Inn stay</span><span class="ov">₱12,235.00</span></div><div class="owe-row"><span class="oi">✈️</span><span class="ot">Plane ticket Cebu ⇄ Tokyo</span><span class="ov">₱10,334.12</span></div></div>
+      <details class="owe-more"><summary>🔍 See how we computed this</summary><p class="small"><b>🏠 Stay:</b> Dragon Inn, 8 nights, ₱73,410 ÷ 6 people = <b>₱12,235</b> each.</p><p class="small"><b>✈️ Ticket:</b> booked Nov 8, 2026 with Mabs &amp; Brian. ₱31,002.36 ÷ 3 = <b>₱10,334.12</b>. Baggage not included.</p><table class="mini"><tr><td>Base fare</td><td class="n">₱2.00</td></tr><tr><td>Admin fee</td><td class="n">₱1,100.00</td></tr><tr><td>Fuel surcharge</td><td class="n">₱5,742.00</td></tr><tr><td>Cebu airport fee (international)</td><td class="n">₱870.00</td></tr><tr><td>Cebu airport fee (domestic)</td><td class="n">₱60.00</td></tr><tr><td>Japan tourist tax</td><td class="n">₱1,198.11</td></tr><tr><td>Japan security fee</td><td class="n">₱279.56</td></tr><tr><td>Japan airport facilities fee</td><td class="n">₱982.45</td></tr><tr><td>PH government service charge</td><td class="n">₱100.00</td></tr><tr><td><b>Total</b></td><td class="n"><b>₱10,334.12</b></td></tr></table></details>
+    </div><div class="owe-panel" data-p="sharol" hidden>
+      <div class="owe-hero"><div class="owe-av big"><img class="i3d" src="img/i/cat.webp" alt=""></div><div><div class="small muted">Hi Sharol! You owe Mabs</div><div class="owe-amt">₱29,965.12</div><div class="small muted">Paid so far: ₱0.00</div></div></div>
+      <div class="owe-list"><div class="owe-row"><span class="oi">🏠</span><span class="ot">Dragon Inn stay</span><span class="ov">₱12,235.00</span></div><div class="owe-row"><span class="oi">✈️</span><span class="ot">Plane ticket Cebu ⇄ Tokyo</span><span class="ov">₱17,730.12</span></div></div>
+      <details class="owe-more"><summary>🔍 See how we computed this</summary><p class="small"><b>🏠 Stay:</b> Dragon Inn, 8 nights, ₱73,410 ÷ 6 people = <b>₱12,235</b> each.</p><p class="small"><b>✈️ Ticket:</b> your own booking, Nov 8, 2026. Baggage not included. The base fare (₱7,398) is higher than the promo fare on the other booking; all other fees are the same.</p><table class="mini"><tr><td>Base fare</td><td class="n">₱7,398.00</td></tr><tr><td>Admin fee</td><td class="n">₱1,100.00</td></tr><tr><td>Fuel surcharge</td><td class="n">₱5,742.00</td></tr><tr><td>Cebu airport fee (international)</td><td class="n">₱870.00</td></tr><tr><td>Cebu airport fee (domestic)</td><td class="n">₱60.00</td></tr><tr><td>Japan tourist tax</td><td class="n">₱1,198.11</td></tr><tr><td>Japan security fee</td><td class="n">₱279.56</td></tr><tr><td>Japan airport facilities fee</td><td class="n">₱982.45</td></tr><tr><td>PH government service charge</td><td class="n">₱100.00</td></tr><tr><td><b>Total</b></td><td class="n"><b>₱17,730.12</b></td></tr></table></details>
+    </div><div class="owe-panel" data-p="dljane" hidden>
+      <div class="owe-hero"><div class="owe-av big"><img class="i3d" src="img/i/panda.webp" alt=""></div><div><div class="small muted">Hi Dun Lee &amp; Jane! You owe Mabs</div><div class="owe-amt">₱24,470.00</div><div class="small muted">Paid so far: ₱0.00</div></div></div>
+      <div class="owe-list"><div class="owe-row"><span class="oi">🏠</span><span class="ot">Dragon Inn stay (2 people)</span><span class="ov">₱24,470.00</span></div></div>
+      <details class="owe-more"><summary>🔍 See how we computed this</summary><p class="small"><b>🏠 Stay:</b> ₱73,410 ÷ 6 × 2 = <b>₱24,470</b> (₱12,235 each). Your Apr 21–22 hotel is separate.</p></details>
+    </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3 style="display:flex;align-items:center;gap:8px"><img src="img/i/letter.webp" alt="" style="width:30px;height:30px">How to pay Mabs</h3>
+      <ul class="tight small">
+        <li>Message Mabs for her payment details. They're never posted here.</li>
+        <li>Send her your receipt so she can mark it paid.</li>
+      </ul>
+      <p class="small muted">Updated Nov 13, 2026. Only Mabs can update this page.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WEAR -->
+<section class="page" id="wear">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/ginza.jpg)"><span class="credit">Photo: Pema G. Lama / Unsplash</span><div class="in"><div class="kicker">What to Wear</div><h2>What to pack and wear</h2></div></div>
+    
+    <div class="note" style="margin-bottom:12px">Typical mid-April: Tokyo days around 18–20°C, mornings around 10°C. Kawaguchiko is colder (near freezing at dawn is possible). GALA's mountain is snowy and around 0–8°C. These are planning norms, not a forecast. <b>Recheck the real forecast 5 days before we fly.</b></div>
+    <div class="grid g2" id="wearCards"></div>
+    <div class="card" style="margin-top:14px">
+      <h3>Reuse-friendly capsule (per person)</h3>
+      <ul class="tight"><li>1 light down or puffer jacket (packable) + 1 trench or light coat</li><li>2 knit sweaters or cardigans (one cream, one in your color)</li><li>3–4 tops, 2 bottoms that go with everything</li><li>Comfy walking sneakers (broken in!) + one cute pair if you must</li><li>Thermal top + leggings (Fuji night, snow day)</li><li>Scarf, beanie, gloves, foldable umbrella, small crossbody bag</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOD -->
+<section class="page" id="food">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/ramen.jpg)"><span class="credit">Photo: Crystal Jo / Unsplash</span><div class="in"><div class="kicker">Food &amp; Convenience Stores</div><h2>Food &amp; 7-Eleven guide</h2></div></div>
+    
+    <div class="note" style="margin-bottom:12px">Prices are approximate (¥, typical 2025–26 Tokyo shelf prices) and items change by season and branch. <span class="pill s-estimated">Estimated</span> Nearby branches: provisional until we book. Each stay card links to the nearest konbini on a map.</div>
+    <div class="grid g3" id="storeCards"></div>
+    <h3 style="margin:24px 0 4px">7-Eleven combos to try 🏪</h3>
+    <p class="small muted" style="margin:0 0 12px">Our picks for cheap, tasty konbini meals. Items change by season and branch. Photos show the type of food; ones marked <b>sample</b> aren't the exact 7-Eleven item.</p>
+    <div class="combos"><div class="combo"><div class="cimgs"><span class="cimg"><img src="img/k/egg.jpg" alt="" loading="lazy"><i>sample</i></span><span class="cimg"><img src="img/k/coffee.jpg" alt="" loading="lazy"></span></div><div class="ct"><b>🌅 Breakfast combo</b><p>Egg sandwich (tamago sando) + Seven Café iced coffee</p><p class="small muted">💡 Coffee: pay at the register, then press the button for your cup size at the machine.</p></div></div><div class="combo"><div class="cimgs"><span class="cimg"><img src="img/k/onigiri.jpg" alt="" loading="lazy"></span><span class="cimg"><img src="img/k/tea.jpg" alt="" loading="lazy"></span></div><div class="ct"><b>🍙 Onigiri combo</b><p>Two onigiri (tuna-mayo + salmon) + a bottle of green tea</p><p class="small muted">💡 Pull tab 1 → 2 → 3 on the wrapper so the seaweed stays crispy.</p></div></div><div class="combo"><div class="cimgs"><span class="cimg"><img src="img/k/chicken.jpg" alt="" loading="lazy"></span></div><div class="ct"><b>🍗 Hot snack combo</b><p>Fried chicken from the hot counter + a cold drink</p><p class="small muted">💡 It's behind the register: point at it or say the name on the label.</p></div></div><div class="combo"><div class="cimgs"><span class="cimg"><img src="img/k/nikuman.jpg" alt="" loading="lazy"></span><span class="cimg"><img src="img/k/oden.jpg" alt="" loading="lazy"></span></div><div class="ct"><b>🥟 Chilly night combo</b><p>Nikuman (steamed pork bun) + oden (daikon, egg, fish cake)</p><p class="small muted">💡 Oden is mostly sold in colder months. In April, ask if they still have it.</p></div></div><div class="combo"><div class="cimgs"><span class="cimg"><img src="img/k/cupnoodle.jpg" alt="" loading="lazy"></span><span class="cimg"><img src="img/k/onigiri.jpg" alt="" loading="lazy"></span></div><div class="ct"><b>🍜 Late-night combo</b><p>Cup noodle + one onigiri</p><p class="small muted">💡 Hot water is at the counter or near the microwave. Staff can heat food for you.</p></div></div><div class="combo"><div class="cimgs"><span class="cimg"><img src="img/k/sweet.jpg" alt="" loading="lazy"></span></div><div class="ct"><b>🍨 Sweet treat</b><p>Dessert shelf: puddings, parfaits, mochi and ice cream</p><p class="small muted">💡 Look for the 7-Premium label: it's 7-Eleven's own brand.</p></div></div></div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card">
+        <h3>Rubbish 101</h3>
+        <ul class="tight">
+          <li>Public bins are rare. Carry a small bag for your trash.</li>
+          <li>Konbini bins are usually split: <b>burnable</b> (food wrappers, paper), <b>PET bottles</b> (peel off label and cap if there's a slot), <b>cans/glass</b>.</li>
+          <li>At the Airbnb, follow the host's sorting rules exactly (usually burnable / plastic / cans / bottles / PET).</li>
+          <li>Finish street snacks where you buy them. Eating while walking is frowned upon in many areas.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Daily food allowance</h3>
+        <table><tr><td>Breakfast (konbini)</td><td class="n">¥500–¥800</td></tr><tr><td>Lunch (ramen, teishoku, gyudon)</td><td class="n">¥900–¥1,500</td></tr><tr><td>Dinner (izakaya, sushi train)</td><td class="n">¥1,800–¥3,500</td></tr><tr><td>Snacks + drinks</td><td class="n">¥500–¥1,000</td></tr><tr><td><b>Budget / comfortable</b></td><td class="n"><b>¥4,500 / ¥7,000 a day</b></td></tr></table>
+        <p class="small muted">Cheap, reliable chains: Ichiran or Tenya, Sukiya/Matsuya gyudon, Sushiro or Kura sushi trains, Saizeriya, CoCo Ichibanya curry.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SHOPPING -->
+<section class="page" id="shopping">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="kicker">Shopping</div><h2>Pasalubong &amp; Don Quijote</h2></div></div>
+    
+    <p class="small muted" style="margin:0 0 12px">Tap any item to see more photos of the real packaging. Photos marked <b>sample</b> show the type of product, not the exact brand.</p>
+    <div class="card" style="margin-bottom:14px">
+      <div class="shop-hd"><h3>Pasalubong</h3><span class="pill s-suggested">Supermarket = cheaper</span></div>
+      <p class="small muted" style="margin:4px 0 12px">OK Store, Life, Seiyu, Aeon, Gyomu Super usually beat tourist shops. <a href="https://www.google.com/maps/search/?api=1&query=supermarket+near+Horikiri-Shobuen+Station">Supermarkets near the house ↗</a></p>
+      <div class="shop" id="shopPasa"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="shop-hd"><h3>OS Drug Ueno</h3><span class="pill s-book">Apr 14</span></div>
+      <p class="small muted" style="margin:4px 0 12px">Cheap drugstore locals use, inside Ameyoko. <b>Cash only, no tax refund</b>, opens 10 AM, crowded so go early. <a href="https://maps.app.goo.gl/ZiLy3WF8tBZydSKU8" target="_blank" rel="noopener">6-11-5 Ueno ↗</a></p>
+      <div id="shopDrug"></div>
+      <p class="small muted" style="margin:8px 0 0">Real product photos: Open Beauty Facts contributors (CC BY-SA). Items marked <b>sample</b> have no free real photo yet (Unsplash: Evangeline Sarney, Hanna, Rosa Rafael, MANITO SILK).</p>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="shop-hd"><h3>Don Quijote</h3><span class="pill s-book">Apr 16</span></div>
+      <div id="shopDQ"></div>
+      <div class="note small" style="margin-top:12px"><b>Tax refund:</b> spend ¥5,000+ before tax in one store on one day, pay at the tax-free counter with your passport, keep the receipt, and pack those items in your carry-on for the Narita customs check. Full steps on the Narita page.</div>
+    </div>
+    
+  </div>
+</section>
+
+<!-- ARRIVAL -->
+<section class="page" id="arrival">
+  <div class="wrap">
+    <div class="cover" style="--img:url(img/skytree.jpg)"><span class="credit">Photo: Ryoji Iwata / Unsplash</span><div class="in"><div class="kicker">Narita Arrival</div><h2>Landing at Narita T2, 08:10 AM</h2></div></div>
+    
+    <div class="note warn" style="margin-bottom:12px">Our home: <b>Dragon Inn Tokyo</b>, 2 min from <b>Keisei Horikiri-Shobuen</b> station. Plan: Keisei train to Aoto, then local 2 stops. Fares and times are estimates: check the route on Google Maps / Keisei before the trip.</div>
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:1.3rem">🏡 Airport → our house, step by step</h3>
+      <p class="muted" style="margin:4px 0 12px">Follow the numbers. About <b>1½ hours</b> in total. Walking photos are from our Airbnb host.</p>
+      <div class="lk" style="margin:0 0 6px"><a class="p" href="https://www.google.com/maps/dir/?api=1&origin=Airport+Terminal+2+Station+Narita&destination=Horikiri-Shobuen+Station&travelmode=transit">🗺️ Train route on Google Maps</a><a href="https://www.google.com/maps/search/?api=1&query=Horikiri-Shobuen%20Station%2C%20Katsushika%20City%2C%20Tokyo">📍 Horikiri-Shobuen Station</a></div>
+      <div class="gs-part">✈️ Part 1: At the airport</div><div class="gs"><div class="gs-n">1</div><div class="gs-b"><b>🛂 Get off the plane at Terminal 2</b><p>Our flight 5J 5062 lands at <b>Narita Terminal 2</b>. Show your Visit Japan Web QR at immigration and customs, then get your bags.</p></div></div><div class="gs"><div class="gs-n">2</div><div class="gs-b"><b>📶 Turn on data + get yen</b><p>Switch on your eSIM. Withdraw yen at a 7-Eleven / JP Post ATM. If the ATM asks to "convert to PHP", press <b>NO</b>.</p></div></div><div class="gs"><div class="gs-n">3</div><div class="gs-b"><b>⬇️ Go down to the train station</b><p>Follow the signs <b>"Railways / 鉄道"</b> to <b>Airport Terminal 2·3 Station</b> in the basement of Terminal 2. No bus or shuttle needed.</p></div></div>
+      <div class="gs-part">🚆 Part 2: The train</div><div class="gs"><div class="gs-n">4</div><div class="gs-b"><b>🔵 Take a KEISEI train (not JR)</b><p>Look for <b>京成 Keisei</b>. Tap your Suica at the Keisei gate. Ride any Keisei train that stops at <b>Aoto (青砥)</b>: the <b>Access Express</b> or the Keisei Main Line <b>Limited Express</b>. Both are normal seats, no reservation, ≈40–60 min.</p></div></div><div class="gs"><div class="gs-n">5</div><div class="gs-b"><b>🚫 Don't take these by mistake</b><p><b>JR / N'EX</b> (wrong company, goes elsewhere). <b>Skyliner</b> only if you want reserved seats: it needs an extra ticket (≈¥2,200 to Aoto) and only some Skyliners stop at Aoto.</p></div></div><div class="gs"><div class="gs-n">6</div><div class="gs-b"><b>🔁 Change trains at Aoto (青砥)</b><p>Get off at <b>Aoto</b>. Take a train toward <b>Keisei Ueno (京成上野)</b> that stops at every station: <b>Local / 普通</b>. Check the screen says it stops at Horikiri-Shobuen.</p></div></div><div class="gs"><div class="gs-n">7</div><div class="gs-b"><b>🚉 Get off at Horikiri-Shobuen (堀切菖蒲園)</b><p>Just <b>2 stops</b> from Aoto: Aoto → Ohanajaya (お花茶屋) → <b>Horikiri-Shobuen</b>. Total fare ≈¥1,100–1,300 each.</p></div></div>
+      <div class="gs-part">🚶 Part 3: Walk from the station (≈6 min)</div><div class="gs"><div class="gs-n">8</div><div class="gs-b"><b>🎫 Go out through the ticket gates</b><p>Tap your Suica and walk out. The house is about <b>6 minutes</b> on foot.</p></div><img src="img/walk-1.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">9</div><div class="gs-b"><b>⬅️ Take the SOUTH exit (南口)</b><p>Walk forward, then turn <b>left</b> to the exit with the yellow sign <b>出口 South 南</b>.</p></div><img src="img/walk-2.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">10</div><div class="gs-b"><b>🥬 Pass the vegetable market</b><p>Walk <b>left</b> along the street, past <b>生鮮市場 あさひ</b> (green sign) with the <b>とみちゃん</b> pig sign above.</p></div><img src="img/walk-3.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">11</div><div class="gs-b"><b>🍣 Keep going straight</b><p>Go straight past <b>Chiyoda Sushi (ちよだ鮨)</b>, the red sign on your right.</p></div><img src="img/walk-4.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">12</div><div class="gs-b"><b>🍗 Turn LEFT at the fried-chicken shop</b><p>At the wooden shop <b>さいとう</b> (on your right), turn <b>left</b>.</p></div><img src="img/walk-5.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">13</div><div class="gs-b"><b>🌳 Walk straight up the small street</b><p>Pass the house with the <b>orange rope on the tree</b> and keep going straight.</p></div><img src="img/walk-6.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">14</div><div class="gs-b"><b>🟩 Turn LEFT at Bar Solomon</b><p>See the <b>green awning "Bar Solomon"</b>? Turn <b>left</b> there.</p></div><img src="img/walk-7.jpg" alt="" loading="lazy" class="gs-img"></div><div class="gs"><div class="gs-n">15</div><div class="gs-b"><b>🏠 You're home! Dragon Inn Tokyo</b><p>Look for the <b>green "Welcome" mat</b> and the bicycles, and the wooden <b>Dragon Inn Tokyo</b> sign. Door instructions come from the host in the Airbnb app.</p><p><a href="https://www.google.com/maps/search/?api=1&query=5-4-6%20Horikiri%2C%20Katsushika%20City%2C%20Tokyo%20124-0006">📍 Map to the house ↗</a></p></div><img src="img/walk-8.jpg" alt="" loading="lazy" class="gs-img"></div>
+      <div class="note small" style="margin-top:12px">😵 <b>Lost?</b> Open the Airbnb app → message the host, or show a station staff member this name: <b>堀切菖蒲園駅</b> (Horikiri-Shobuen Station). <br>🧳 <b>Too tired or too many bags?</b> A pre-booked van for 6 (Klook) goes door to door. <a href="https://www.klook.com/en-PH/search/result/?query=Narita%20airport%20private%20transfer">See vans ↗</a></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Links to do before we land</h3>
+      <div class="lk">
+        <a class="p" href="https://www.vjw.digital.go.jp/">Visit Japan Web (immigration + customs QR)</a>
+        <a href="https://www.etravel.gov.ph/">eTravel PH (72h before each flight)</a>
+        <a href="https://www.jreast.co.jp/multi/en/wsmlp/">Welcome Suica Mobile (iPhone)</a>
+        <a href="https://apps.apple.com/app/id6738336566">Welcome Suica app (App Store)</a>
+        <a href="https://www.narita-airport.jp/en/access/">Narita airport access</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Seven%20Bank%20ATM%2C%20Narita%20Airport%20Terminal%202">7-Eleven ATM at T2</a>
+      </div>
+      <p class="small muted" style="margin-top:8px">Android: add a regular Suica/PASMO in Google Wallet if your phone supports it, or buy a Welcome Suica card at the station.</p>
+    </div>
+    <details style="margin-bottom:14px"><summary><b>🧾 Other ways to get there (Skyliner, bus, van) + arrival tips</b></summary><div class="body"><div class="grid g2">
+      <div class="card">
+        <ol class="tight">
+          <li><b>Immigration + customs:</b> show your Visit Japan Web QR. Narita has joint kiosks that do both in one scan. Paper cards still work.</li>
+          <li><b>Bags:</b> collect luggage, stay together, count six.</li>
+          <li><b>Data:</b> turn on the eSIM you installed at home. Test Google Maps before leaving the hall.</li>
+          <li><b>Cash:</b> 7-Eleven (Seven Bank) and JP Post ATMs accept most foreign cards. If the screen offers to "convert to PHP", <b>decline</b> and choose yen. Your PH bank may add its own fee.</li>
+          <li><b>Transport card:</b> Suica/PASMO on iPhone, or a Welcome Suica. Load ¥3,000 to start.</li>
+          <li><b>Ride:</b> Keisei train (plan above). We'll likely reach Tokyo around 10:30–11:00, before check-in (3–4 PM). Drop bags with the host if allowed, or use station coin lockers.</li>
+        </ol>
+        <p class="small"><b>Starting cash:</b> ¥30,000 per person on arrival. The rest can go on card or Suica. It's not an extra cost: it's already inside the food and transport lines.</p>
+      </div>
+      <div class="card tbl-wrap">
+        <table>
+          <thead><tr><th>Option</th><th class="n">Time</th><th class="n">Per person</th><th class="n">Group of 6</th></tr></thead>
+          <tbody>
+            <tr><td><b>Keisei Access Express / through train</b> to Asakusa or Aoto. Often no transfer, regular seats, little luggage space</td><td class="n">≈ 45–65 min</td><td class="n">≈ ¥1,300–1,500 (estimate)</td><td class="n">≈ ¥8,400</td></tr>
+            <tr><td><b>Skyliner</b> to Ueno, then taxi or local train. Reserved seats + luggage space</td><td class="n">≈ 45–60 min</td><td class="n">≈ ¥2,600 + taxi share</td><td class="n">≈ ¥16,000+</td></tr>
+            <tr><td><b>Airport bus</b> to Tokyo Station (TYO-NRT ¥1,500) or Limousine bus (≈¥3,100–3,600), then taxi</td><td class="n">≈ 75–120 min</td><td class="n">¥1,500–3,600 + taxi share</td><td class="n">≈ ¥12,000–24,000</td></tr>
+            <tr><td><b>Private van</b> (pre-booked, door to door, big bags OK)</td><td class="n">≈ 60–90 min</td><td class="n">quote needed</td><td class="n">quote needed</td></tr>
+          </tbody>
+        </table>
+        <p class="small muted">Final walk from the station: 1–10 min depending on the home (see each card).</p>
+      </div>
+    </div>
+    </div></details>
+    <div class="card" style="margin-top:14px">
+      <h3>Going home on Apr 21: the early start</h3>
+      <p class="small">Flight 5J 5063 leaves Narita T2 at <b>08:55</b>. Check-in counters close at <b>08:10</b>. Because of the new tax-refund customs check (see below), aim to arrive about <b>6:00 AM</b>. From east Tokyo that means leaving around <b>4:45–5:00 AM</b>.</p>
+      <ul class="tight small">
+        <li><b>Option 1:</b> first Keisei/Access Express trains from near the home. Check the first departure times for our station before booking. <span class="pill s-verify">To verify</span></li>
+        <li><b>Option 2:</b> pre-booked van for 6 with luggage (most relaxed). Get 2–3 quotes. <span class="pill s-book">To book</span></li>
+        <li><b>Option 3:</b> spend the last night (Apr 20) at a Narita airport-area hotel. Shuttle to T2, but it's one more move. <span class="pill s-suggested">Suggested backup</span></li>
+      </ul>
+      <p class="small muted">Another reason the east-Tokyo homes help: they're 45–60 min closer to Narita by direct train than Shinjuku.</p>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3>Tax refund at Narita (new system from Nov 2026)</h3>
+      <ol class="tight small">
+        <li>In stores we pay the <b>full price incl. 10% tax</b>. Spend <b>¥5,000+ (before tax) at the same store on the same day</b>, show your <b>physical passport</b>, and register the refund the way the store explains.</li>
+        <li>Keep every receipt and <b>don't use or eat</b> the tax-free items. Pack them in your <b>carry-on</b>.</li>
+        <li>At Narita, go to the <b>customs tax-refund check before check-in</b>. Customs checks receipt by receipt; one missing item can cancel the refund for that receipt.</li>
+        <li>Refund arrives later: about 1–2 weeks to a credit card, longer by bank transfer.</li>
+      </ol>
+      <p class="small muted">Don Quijote waived its refund handling fee under the new system. Sources: Japan Tourism Agency, GO TOKYO, Tokyo Cheapo, fun-japan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STILL TO DECIDE -->
+<section class="page" id="decide">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="kicker">Still to Decide</div><h2>What we still need to decide</h2></div></div>
+    <p class="muted" style="margin:0 0 14px">Updated Nov 13, 2026. Tell Mabs your answer and she'll update this page.</p>
+    <div class="card"><div class="dq"><span class="dq-e">🚐</span><div><b>Apr 21 ride to Narita</b><p>First trains, a pre-booked van for 6, or sleep near the airport on Apr 20? We need to be at Narita by about 6:00 AM.</p></div><span class="pill s-verify">Decide</span></div><div class="dq"><span class="dq-e">⛩️</span><div><b>Kyoto side trip (optional)</b><p>Still undecided. Who wants to go on Apr 15–16? If any of us go, pick a hotel on the Kyoto page and book the Shinkansen.</p></div><span class="pill s-verify">Confirm</span></div><div class="dq"><span class="dq-e">🧳</span><div><b>Ask the host 2 things</b><p>Can we drop bags early on Apr 13 (we arrive ≈10:30 AM)? Is a 4:45 AM self check-out OK on Apr 21?</p></div><span class="pill s-verify">Ask host</span></div><div class="dq"><span class="dq-e">🗻</span><div><b>Mt. Fuji day (Sat Apr 17)</b><p>Book a private van for 6 with our loop (Lawson → Chureito → Honcho → udon lunch → Yamanaka → Dream Bridge)? Or the cheaper shared bus tour (no Yamanaka, set order).</p></div><span class="pill s-verify">Decide</span></div><div class="dq"><span class="dq-e">⛷️</span><div><b>Snow day (Sun Apr 18)</b><p>Book the GALA Yuzawa package + Shinkansen seats, and agree on the go / no-go rule if there's no snow.</p></div><span class="pill s-book">To book</span></div><div class="dq"><span class="dq-e">✈️</span><div><b>Dun Lee & Jane's return</b><p>Their ticket shows Apr 21. If they're staying until Apr 22, confirm the flight and book their own place for the night of Apr 21.</p></div><span class="pill s-verify">Confirm</span></div><div class="dq"><span class="dq-e">💸</span><div><b>Paying Mabs back</b><p>Agree with Eman, Sharol and Dun Lee &amp; Jane when and how they'll pay their share of the stay and tickets.</p></div><span class="pill s-verify">Agree</span></div><div class="dq"><span class="dq-e">🛂</span><div><b>Attic Tours fee</b><p>Ask Attic in early December how much their service fee is, then update the Visa page and Budget.</p></div><span class="pill s-book">Early Dec</span></div><div class="dq"><span class="dq-e">🛡️</span><div><b>Travel insurance</b><p>Pick a provider and coverage level. Buy in March 2027 with baggage and travel tax.</p></div><span class="pill s-book">March</span></div></div>
+    <h2 class="big-q">Already decided ✅</h2>
+    <div class="card"><div class="dq done"><span class="dq-e">✈️</span><div><b>Flights for all 6</b><p>Cebu ⇄ Narita, paid ✓</p></div></div><div class="dq done"><span class="dq-e">🏡</span><div><b>Dragon Inn Tokyo</b><p>Booked ✓ · 2 full bathrooms with showers, house has stairs (host confirmed)</p></div></div><div class="dq done"><span class="dq-e">🛏️</span><div><b>Bedrooms</b><p>B1 Mabelle &amp; Brian · B2 Sharol · B3 Eman (loft) · B4 Dun Lee &amp; Jane</p></div></div><div class="dq done"><span class="dq-e">📘</span><div><b>Passports</b><p>All valid ✓</p></div></div><div class="dq done"><span class="dq-e">🛂</span><div><b>Visa route</b><p>Group goes with Attic Tours (Brian doesn't need a visa)</p></div></div><div class="dq done"><span class="dq-e">🍜</span><div><b>Apr 13 dinner</b><p>Ichiran ramen in Ueno</p></div></div></div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section class="page" id="sources">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="kicker">Sources and last checked</div><h2>Where this came from</h2></div></div>
+    <div class="card small">
+      <p><b>All checked Nov 11, 2026.</b> Verified facts = official/primary pages. Current quotes = live Airbnb search results for our exact dates (not held, can change). Planning estimates and sample content are labeled where they appear. Illustrations are drawn for this page; no photos of real listings are shown. Open each listing link for its real photos.</p>
+      <ul class="src">
+        <li>Embassy of Japan in PH, Visa/Consular Services (visa gratis, Visa Center, 3-month validity, several weeks processing): <a href="https://www.ph.emb-japan.go.jp/itpr_en/00_000035.html">ph.emb-japan.go.jp</a></li>
+        <li>VFS Global Japan–Philippines info (₱520 service fee; Philippines "Gratis"): <a href="https://www.vfsglobal.com/one-pager/japan/philippines/english/">vfsglobal.com</a> · Embassy/VFS requirement PDFs: <a href="https://www.ph.emb-japan.go.jp/files/100508281.pdf">checklist PDF</a></li>
+        <li>MOFA JAPAN eVISA (Filipinos: packaged tours only): <a href="https://www.mofa.go.jp/j_info/visit/visa/visaonline.html">mofa.go.jp</a></li>
+        <li>Attic Tours official site: <a href="https://attictours.asia">attictours.asia</a> · Branch list (JCB promo page, Aug–Dec 2026): <a href="https://www.specialoffers.jcb/ph/campaign/detail/JCBPLEX_DiscountedVisa/89194/">specialoffers.jcb</a></li>
+        <li>eTravel (free, 72-hour window): <a href="https://www.etravel.gov.ph/frequently-asked-questions">etravel.gov.ph FAQ</a></li>
+        <li>Philippine travel tax ₱1,620 economy (still in force; abolition bills pending): <a href="https://tieza.gov.ph/">TIEZA</a>, <a href="https://suroy.ph/philippine-travel-tax-abolition-senate-2026/">status check Aug 2026</a></li>
+        <li>Japan International Tourist Tax ¥3,000 from July 1, 2026 (in ticket): <a href="https://www.mlit.go.jp/kankocho/content/001996466.pdf">Japan Tourism Agency PDF</a></li>
+        <li>Tokyo lodging tax 3% from April 1, 2027, threshold ¥13,000, includes minpaku: <a href="https://travel.watch.impress.co.jp/docs/news/2122276.html">Travel Watch</a></li>
+        <li>Visit Japan Web: <a href="https://www.vjw.digital.go.jp/">vjw.digital.go.jp</a></li>
+        <li>Keisei Narita–Aoto/Horikiri-Shobuen route and fares: <a href="https://www.keisei.co.jp/keisei/tetudou/skyliner/us/traffic/main_fares.php">Keisei fares</a>, <a href="https://www.keisei.co.jp/keisei/tetudou/skyliner/us/faq/index.php">Skyliner FAQ</a> · Welcome Suica Mobile: <a href="https://www.jreast.co.jp/multi/en/wsmlp/">JR East</a></li>
+        <li>N'EX fares (¥3,330 Narita–Shinjuku; ¥5,200 round trip): <a href="https://www.jreast.co.jp/de/multi/nex/tickets/index.html">JR East</a></li>
+        <li>Shinjuku–Kawaguchiko bus ¥2,200: <a href="https://asset.japan.travel/image/upload/v1762318605/pdf/2025_TIC/202511/Bus_Schedule_to_Kawaguchiko_Mt._Fuji_Nov.1_Nov.30.pdf">JNTO TIC timetable PDF</a>; Fuji Excursion ¥4,130: <a href="https://www.gltjp.com/en/article/item/21018/">GLTJP</a></li>
+        <li>GALA Yuzawa: official winter site <a href="https://gala.co.jp/en/winter/">gala.co.jp</a>; spring 2026 park/area notice <a href="https://gala.co.jp/en/winter/news/55917">news</a>; 2026–27 dates as reported <a href="https://todolist-japan.com/en/gala-yuzawa-ski-guide/">todolist-japan</a>; 2026 early season end <a href="https://www.kkday.com/en/product/9974">KKday notice</a>; last-season prices <a href="https://hiddenjapan-gems.com/gala-yuzawa-guide/">guide</a></li>
+        <li>Fuji Shibazakura Festival 2026 dates: <a href="https://www.japan-guide.com/e/e6919.html">japan-guide</a></li>
+        <li>Exchange rate: <a href="https://www.exchange-rates.org/converter/php-jpy/1000">exchange-rates.org</a></li>
+        <li>Snack &amp; product photos (Wikimedia Commons): KitKat Matcha by Raimond Spekking (CC BY-SA 4.0); Bourbon Alfort by Quercus acuta (CC0); Tokyo Milk Cheese Factory shop by Wide Awake! (CC BY 4.0); Yoku Moku Cigare by Kentin (CC BY-SA 3.0); Jagarico by 毒島みるく (CC0); Pocky by Evan-Amos (CC BY-SA 3.0); Hi-Chew by EnzoTC (CC BY-SA 4.0); Meiji milk chocolate by choo chin nian (CC BY-SA 2.0); Black Thunder by FlipTable (public domain); V-Rohto by 勇者プクリン (CC BY 3.0); Salonpas by AddisWang (CC BY-SA 3.0). Photos resized/cropped. "Sample" skincare and hair photos: Unsplash.</li>
+        <li>3D icons: Microsoft Fluent Emoji (MIT License).</li>
+        <li>Itinerary place photos, 7-Eleven food photos and the Yoshida udon (@oura), omurice (@okuyama_leo), tonkatsu (Zhang Ziyu), kimono (HONG FENG), okonomiyaki (Daniel Hooper), unagi (Richard Iwaki), Jukken Bridge (Wenhao Ruan), Skytree (Hakan Nural), Harry Potter studio set (Korng Sok), Don Quijote (MAK), claw machines (Vinh Nguyen) and karaoke (Ejmin Matevousian), gyoza (Mikey Frost), sumo (Bob Fisher), Hoppy Street (ayumi kubo), yakiniku (Prastika Herlianti), Omoide Yokocho (Pema G. Lama), Miyashita Park (Intrepid), Tokyo Tower spots (Se. Tsuchiya, Tsuyoshi Kozu, Andrea De Santis), Tokyo Metropolitan Government Building (Sebastian Herrmann, Gilly), batting cage (kaleb tapp) photos, Bic Camera AKIBA (Tokumeigakarinoaoshima, Wikimedia Commons, CC BY-SA 4.0): Unsplash (Unsplash License). They show the place or type of food, not always the exact shop or item.</li>
+        <li>Walking photos from Horikiri-Shobuen Station to the house: provided by our Airbnb host (Dragon Inn Tokyo).</li>
+        <li>Photos (Unsplash License, free to use): Manuel Cosentino (Chureito/Fuji), Joshua Tan (Kawaguchiko), PJH (Fuji Lawson), Nicholas Doherty (Asakusa), Pat Krupa (Akihabara), Jezael Melgoza (Shibuya), Elton Sa (Harajuku), Ryoji Iwata (Skytree), Michael Wu (market), Pema G. Lama (Ginza, Shinjuku), Koukichi Takahashi (Ueno), Josh Soto (Tokyo), Brendan Beale (snow, illustrative), Crystal Jo (ramen), Frank Huang (konbini), David (airport). Photos show places, not our booked homes.</li>
+        <li>Airbnb listings: links on each card (searched Nov 11, 2026, exact dates and 6 adults).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+<div class="wrap foot">Planning page only: nothing here is a booking. Passports, birth dates, booking references, contact numbers and door codes stay off this public page.</div>
+</div></div>
+
+<div id="printSummary"></div>
+
+<script>
+(function(){
+const TRAV=[{n:"Mabelle",c:"#d98c99"},{n:"Brian",c:"#6f8fae"},{n:"Eman",c:"#c8463d"},{n:"Dun Lee",c:"#8aa37b"},{n:"Jane",c:"#c9a24a"},{n:"Sharol",c:"#9b7bb5"}];
+const store={get(k,d){try{const v=localStorage.getItem("jwtg."+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem("jwtg."+k,JSON.stringify(v))}catch(e){}}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* chips */
+
+/* countdown */
+function cd(){const t=new Date("2027-04-13T00:00:00+08:00")-new Date();const d=Math.max(0,Math.ceil(t/864e5));$("#countdown").textContent=d+" days";}
+cd();
+
+
+/* shopping list */
+const IS=q=>"https://www.google.com/search?tbm=isch&q="+encodeURIComponent(q);
+const itm=([e,n,d,q,im])=>{const smp=im&&im.endsWith("*");const src=im?im.replace("*",""):"";return `<a class="itm shopitm" href="${IS(q)}">${im?`<span class="pimg"><img src="img/shop/${src}" alt="" loading="lazy">${smp?`<i>sample</i>`:""}</span>`:`<span class="pimg" style="display:grid;place-items:center;font-size:34px;background:var(--panel)">${e}</span>`}<span class="t"><b>${n}</b><span>${d}</span></span><span class="go">↗</span></a>`};
+const PASA=[["🍫","KitKat Japan flavors","Matcha, strawberry, sake. Big bags at supermarkets","KitKat Japan matcha bag","kitkat.webp"],["🍪","Bourbon Alfort","Chocolate biscuits, cheap multipacks","Bourbon Alfort chocolate","alfort.webp"],["🧀","Tokyo Milk Cheese Factory","Cookies. Station/department-store shops or Narita","Tokyo Milk Cheese Factory cookies box","tmcf.webp"],["🎁","Yoku Moku","Chocolate cigares. Dept. store/airport, ask for double chocolate","Yoku Moku cigare chocolate box","yokumoku.webp"]];
+const DRUG=[["Skincare",[["☀️","Bioré UV Aqua Rich","Watery sunscreen · ビオレUV アクアリッチ","Biore UV Aqua Rich watery essence","real-biore.jpg"],["💧","Hada Labo Gokujyun","Hyaluronic lotion · 肌ラボ 極潤","Hada Labo Gokujyun lotion","real-hadalabo.jpg"],["🌾","Naturie Hatomugi","500 ml toner, ≈¥500–700 · ナチュリエ","Naturie Hatomugi skin conditioner","real-naturie.jpg"],["🍋","Melano CC","Vitamin C serum · メラノCC","Melano CC serum","real-melano.jpg"],["🫧","Senka Perfect Whip","Foam cleanser · 専科","Senka Perfect Whip","real-senka.jpg"]]],["Makeup & lips",[["💋","Lip Fondue","Mentholatum lip gloss · リップフォンデュ","Mentholatum Lip Fondue","lipfondue.jpg*"],["👄","Kate Lip Monster","Long-lasting lipstick · リップモンスター","Kate Lip Monster lipstick","katelip.jpg*"],["🌸","Canmake Cream Cheek","Cheap, cute gift · キャンメイク","Canmake Cream Cheek","canmake.jpg*"]]],["Hair",[["💆","Fino hair mask","Premium touch · フィーノ","Fino premium touch hair mask","real-fino.jpg"],["🍯","&honey hair oil","Moisture oil · アンドハニー","and honey hair oil Japan","tsubaki.jpg*"]]],["Gifts in bulk",[["🎭","Lululun masks","Daily sheet masks · ルルルン","Lululun face mask","real-lululun.jpg"],["😴","Megrhythm","Steam eye masks · めぐりズム","Megrhythm steam eye mask","eyemask.jpg*"]]]];
+const DQ=[["Snacks",[["🥔","Jagariko","Calbee potato sticks","Jagariko Calbee","jagariko.webp"],["🍟","Jagabee","Calbee potato fries","Jagabee Calbee"],["🥢","Pocky flavors","Japan-only flavors","Pocky Japan flavors","pocky.webp"],["🍬","Hi-Chew","Chewy candy","Hi-Chew Japan","hichew.webp"],["🍫","Meiji chocolate","Classic milk bar","Meiji milk chocolate bar","meiji.webp"],["⚡","Black Thunder","Cocoa cookie bar","Black Thunder chocolate","black.webp"],["🍫","KitKat bags","Cheaper here in bulk","KitKat Japan big bag","kitkat.webp"]]],["Skincare",[["☀️","Bioré UV Aqua Rich","Watery sunscreen","Biore UV Aqua Rich watery essence","real-biore.jpg"],["🧴","Anessa","Perfect UV sunscreen milk","Anessa perfect UV milk","anessa.jpg*"],["💧","Hada Labo","Gokujyun hydrating lotion","Hada Labo Gokujyun lotion","real-hadalabo.jpg"],["🍋","Melano CC","Vitamin C serum","Melano CC serum","real-melano.jpg"],["🫧","Senka Perfect Whip","Foam cleanser","Senka Perfect Whip","real-senka.jpg"],["🎭","Lululun","Daily face masks","Lululun face mask","real-lululun.jpg"]]],["Hair & body",[["💆","Fino hair mask","Premium touch treatment","Fino premium touch hair mask","real-fino.jpg"],["🌺","Tsubaki","Shampoo & conditioner","Tsubaki shampoo Japan","tsubaki.jpg*"],["🦶","Foot peel mask","Baby Foot style peel","Baby Foot peel Japan","footpeel.jpg*"]]],["Health",[["👁️","Rohto eye drops","Cooling eye drops","Rohto eye drops Japan","rohto.webp"],["🩹","Salonpas","Pain relief patches","Salonpas patches Japan","salonpas.webp"]]]];
+$("#shopPasa").innerHTML=PASA.map(itm).join("");
+$("#shopDrug").innerHTML=DRUG.map(([c,l])=>`<div class="shop-cat">${c}</div><div class="shop">${l.map(itm).join("")}</div>`).join("");
+$("#shopDQ").innerHTML=DQ.map(([c,l])=>`<div class="shop-cat">${c}</div><div class="shop">${l.map(itm).join("")}</div>`).join("");
+
+/* who owes mabs */
+document.querySelectorAll(".owe-btn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".owe-btn").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelector(".owe-empty").hidden=true;
+  document.querySelectorAll(".owe-panel").forEach(p=>p.hidden=p.dataset.p!==b.dataset.p);
+}));
+/* route */
+const ROUTE=[["Apr 13","Land 08:10 · Skytree"],["Apr 14","Ueno + Akihabara"],["Apr 15","Harry Potter + Shibuya"],["Apr 16","Asakusa + chopsticks"],["Apr 17","Mt. Fuji day trip"],["Apr 18","Snow day: GALA"],["Apr 19","Ginza + Tokyo Tower"],["Apr 20","Chill shopping + farewell"],["Apr 21–22","Fly home"]];
+const RIMG=["skytree","akiba","harajuku","asakusa","fuji","snow","tsukiji","shinjuku","airport"];$("#routeBox").innerHTML=ROUTE.map((r,i)=>`<a class="stop" href="#itinerary" data-day="${i}"><div class="ph" style="background-image:url(img/${RIMG[i]}.jpg)"></div><div class="tx"><span class="small muted">${r[0]}</span><b>${r[1]}</b></div></a>`).join("");
+
+/* router: one screen at a time */
+const VIEWS=[...document.querySelectorAll("section.page")].map(x=>x.id);
+const links=[...document.querySelectorAll(".navlink")];
+function go(v,push){if(!VIEWS.includes(v))v="overview";document.querySelectorAll("section.page").forEach(x=>x.classList.toggle("on",x.id===v));
+ links.forEach(a=>a.classList.toggle("active",a.dataset.v===v));const l=links.find(a=>a.dataset.v===v);if(l)$("#topTitle").textContent=l.textContent.trim();
+ document.body.classList.remove("menu-open");window.scrollTo(0,0);if(push&&location.hash!=="#"+v){try{history.replaceState(null,"","#"+v)}catch(e){location.hash=v}}}
+document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const v=a.getAttribute("href").slice(1);if(VIEWS.includes(v)){e.preventDefault();go(v,true);}});
+window.addEventListener("hashchange",()=>go(location.hash.slice(1)));
+$("#menuBtn").onclick=()=>document.body.classList.add("menu-open");
+$("#scrim").onclick=()=>document.body.classList.remove("menu-open");
+/* next/prev pager */
+const ORDER=links.map(a=>a.dataset.v);
+document.querySelectorAll("section.page").forEach(sec=>{const i=ORDER.indexOf(sec.id);const w=sec.querySelector(".wrap");if(!w||i<0)return;const pv=ORDER[i-1],nx=ORDER[i+1];const nm=v=>links.find(a=>a.dataset.v===v).textContent.trim();
+ const d=document.createElement("div");d.className="pager no-print";d.innerHTML=(pv?`<a class="btn ghost sm" href="#${pv}">‹ ${nm(pv)}</a>`:"<span></span>")+(nx?`<a class="btn sm" href="#${nx}">${nm(nx)} ›</a>`:"");w.appendChild(d);});
+go(location.hash.slice(1)||"overview");
+
+/* CHECKLIST (one shared list for everyone) */
+const CHECK=[
+ ["Now – December 2026",[
+  ["All passports valid ✓ (confirmed Nov 13, 2026). Just keep them safe.","opt"],
+  ["Tokyo stay booked (Dragon Inn) ✓. Print the booking confirmation for the visa itinerary.","must"],
+  ["Early December: contact Attic Tours SM City Cebu (fee, appointment, January schedule, courier for Dumaguete folks).","must"],
+  ["December: order PSA birth (and marriage) certificates. Must be issued within 1 year of lodging.","must"],
+  ["December: Certificate of Employment, ITR/BIR 2316 or business papers (see Visa page).","must"]]],
+ ["Visa window: Jan 13 – 22, 2027 (everyone except Brian)",[
+  ["Jan 4–12: get bank certificates (fresh: issued within about 3 months).","must"],
+  ["Lodge visa at Attic Tours SM City Cebu on Mon, Jan 18, 2027 (window Jan 13–22). No international trips until passports come back.","must"],
+  ["Track the result (usually several weeks, roughly early to mid-Feb). No guaranteed date.","must"]]],
+ ["After visas are approved (around Feb 2027)",[
+  ["Book Dumaguete ⇄ Cebu flights for 5 (not Sharol, she's in Cebu). Arrive Cebu by the evening of Apr 12; fly back after landing at 1:15 PM on Apr 21.","must"]]],
+ ["March 2027",[
+  ["Buy checked baggage on Cebu Pacific (GO Basic has none; hand carry max 10 kg). Buy luggage if needed.","must"],
+  ["Pay PH travel tax ₱1,620 each (not in our fare): Cebu Pacific site, TIEZA online, or TIEZA counter at the airport.","must"],
+  ["Buy travel insurance: medical abroad, trip cancellation, delay, baggage, snow activities.","must"],
+  ["Book on Klook: Fuji day tour (Sat), chopstick workshop (Fri), GALA package (Sun), teamLab/Shibuya Sky. Book Shinkansen seats for Sun Apr 18.","must"],
+  ["Book the early ride to Narita for Apr 21 (be at the airport by about 6:00 AM, see Narita page).","must"],
+  ["Check your phone is eSIM-compatible; buy a Japan eSIM.","opt"],
+  ["Tell your bank you'll use cards in Japan; check foreign transaction + ATM fees.","opt"]]],
+ ["Must pack",[
+  ["Passport + visa, printed lodging booking, eTravel QR.","must"],
+  ["Plug adapter: Japan uses flat 2-pin (Type A), 100V. Flat-pin PH plugs fit, but round-pin plugs don't, so bring a universal adapter. Check chargers say 100–240V; 220V-only hair dryers/straighteners won't work well.","must"],
+  ["Power banks in cabin bag only, never checked. Check Cebu Pacific's limits.","must"],
+  ["Medicines in original packs + prescription copy. Japan bans some cold medicines with pseudoephedrine.","must"],
+  ["Warm layers (3–20°C), comfy walking shoes, gloves for the snow day.","must"],
+  ["Foldable bag for Don Quijote / pasalubong shopping.","opt"]]],
+ ["2 weeks before (by Mar 30, 2027)",[
+  ["Register on Visit Japan Web (immigration + customs) and save the QR.","must"],
+  ["Save private copies of passports, visas, insurance, bookings (not on this site).","must"],
+  ["Get Airbnb check-in instructions from the host (keep door codes private).","must"]]],
+ ["eTravel (required, QR needed)",[
+  ["Going: register at etravel.gov.ph within 72 hours before the flight, so between 2:00 AM Apr 10 and the 2:00 AM Apr 13 departure. Screenshot the QR.","must"],
+  ["Coming home (4 of us): register from 1:15 PM Apr 18 (72 h before landing 1:15 PM Apr 21). Screenshot the QR.","must"],
+  ["Dun Lee & Jane: if their return date is different, register within 72 h before their own arrival.","must"]]],
+ ["Departure night (5J 5062, 02:00 AM Apr 13)",[
+  ["Be at Mactan-Cebu T2 by about 11:00 PM on Apr 12 (counters close 45 min before).","must"],
+  ["Weigh bags; online check-in on the Cebu Pacific app.","opt"]]],
+ ["Flying home",[
+  ["Keep all tax-free items + receipts in your carry-on; do the customs tax-refund check at Narita BEFORE check-in.","must"],
+  ["Japan departure tax is already inside our ticket.","opt"]]]
+];
+function renderChecks(){
+  const done=store.get("chk.all",{});let n=0,t=0;
+  $("#checklistBox").innerHTML=CHECK.map((g,gi)=>`<details ${gi<2?"open":""}><summary><h3>${g[0]}</h3></summary><div class="body">${g[1].map((it,ii)=>{const id=`c${gi}_${ii}`;t++;if(done[id])n++;return `<div class="check"><input type="checkbox" id="${id}" ${done[id]?"checked":""}><label for="${id}">${esc(it[0])} <span class="tag ${it[1]}">${it[1]==="must"?"Must":"Optional"}</span></label></div>`}).join("")}</div></details>`).join("");
+  const p=t?Math.round(n/t*100):0;$("#progBar").style.width=p+"%";$("#progTxt").textContent=p+"% done";
+  $("#checklistBox").querySelectorAll("input").forEach(cb=>cb.onchange=()=>{const d=store.get("chk.all",{});d[cb.id]=cb.checked;store.set("chk.all",d);renderChecks();});
+}
+renderChecks();
+
+/* VISA (one list, pick the situation) */
+const VISA={
+ common:["Passport (signed) + photocopy of the ID page","Visa application form with photo 4.5 × 3.5 cm (white background)","PSA birth certificate, issued within 1 year (skip if passport has a used Japan visa)","PSA marriage certificate if married, issued within 1 year (same exception)","Itinerary in Japan (daily schedule with lodging names/addresses)","Flight itinerary printout + lodging booking printouts"],
+ employed:["Certificate of Employment (position, salary, date hired)","Bank certificate in your name (6-month balance or with statement)","Income Tax Return / BIR Form 2316 (photocopy)"],
+ self:["DTI or SEC registration + Mayor's/Business permit (freelancers: contracts or client proof; ask Attic what they accept)","Bank certificate in your name (6-month balance or with statement)","Income Tax Return (BIR form) + proof of tax payment"],
+ sponsored:["Guarantee letter from the guarantor (embassy form)","Proof of relationship to guarantor (e.g., PSA birth/marriage certificate, photos)","Guarantor's bank certificate","Guarantor's ITR / employment proof","Your own employment or study proof, if any"]
+};
+function renderVisa(){
+  const type=store.get("vtype","employed");
+  $("#visaType").querySelectorAll("button").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.v===type);b.onclick=()=>{store.set("vtype",b.dataset.v);renderVisa();};});
+  const done=store.get("vchk."+type,{});
+  const items=VISA.common.concat(VISA[type]);
+  const label={employed:"Employed",self:"Self-employed / freelancer",sponsored:"Sponsored by a guarantor"}[type];
+  let n=0;
+  $("#visaList").innerHTML=`<h3>Checklist · ${label}</h3><p class="small muted">Originals of certificates + photocopies. Recheck the current list on the embassy/VFS site before lodging.</p>`+items.map((it,i)=>{const id="v"+type+i;if(done[id])n++;return `<div class="check"><input type="checkbox" id="${id}" ${done[id]?"checked":""}><label for="${id}">${esc(it)}</label></div>`}).join("")+`<p class="small"><b>${n} of ${items.length}</b> ready.</p>`;
+  $("#visaList").querySelectorAll("input").forEach(cb=>cb.onchange=()=>{const d=store.get("vchk."+type,{});d[cb.id]=cb.checked;store.set("vchk."+type,d);renderVisa();});
+}
+renderVisa();
+
+/* STAYS */
+const STAYS=[
+ {id:"dragon",flag:"Booked ✓",name:"Dragon Inn Tokyo: new 4-bedroom Japanese-style house",url:"https://www.airbnb.com/rooms/1404670321568554684",area:"Horikiri-Shobuen (Katsushika)",price:73410,priceB:null,bnote:"Minimum stay looks like 5 nights (search quoted 5 nights for shorter windows), so Plan B isn't possible here.",rating:"4.95 ★ (38)",
+  sleep:[["Mabelle & Brian","Bedroom 1 (2nd floor)"],["Sharol","Bedroom 2 (2nd floor)"],["Eman","Bedroom 3 (loft)"],["Dun Lee & Jane","Bedroom 4 (1st floor)"]],sleepNote:"Listing shows 4 bedrooms but only 3 beds, so some rooms likely use futons. Ask host for the bed in each room.",
+  baths:"2 full bathrooms, each with a shower (host confirmed)",bathOK:"yes",
+  access:"Has stairs inside; bedroom 3 is a loft (host confirmed).",accessOK:"no",
+  station:"2 min walk to Keisei Horikiri-Shobuen (Keisei Main Line: Ueno about 15 min; Narita by Keisei)",store:"Convenience stores, supermarket, 100-yen shop nearby (host)",map:"https://www.google.com/maps/search/?api=1&query=convenience+store+near+Horikiri-Shobuen+Station",
+  wifi:"High-speed fiber, cable option, plus pocket Wi-Fi to take out",extras:"Washer ✓ · kimonos/yukata to try on",times:"Check listing",cancel:"Check listing",
+  meets:["4 enclosed bedrooms","2 min to station","Konbini nearby","Within ₱80,000 for 8 nights"],gaps:["2 full showers not confirmed","Stairs not stated","Far from Shinjuku (east Tokyo, about 40 min)"]},
+ {id:"abashi",flag:"Best location & reviews",name:"Asakusabashi building, 3rd-floor apartment (sleeps 6–9)",url:"https://www.airbnb.com/rooms/9738892",area:"Asakusabashi (Taito)",price:91982,priceB:[50483,38955],rating:"4.67 ★ (187)",
+  sleep:[["Couple 1 · Mabelle & Brian","Bedroom 1"],["Couple 2 · Dun Lee & Jane","Bedroom 2"],["Sharol","Bedroom 3 (own room)"],["Eman","Extra bed (7 beds for 9 guests): confirm it's in the living area"]],sleepNote:"3 bedrooms, 7 beds. Ask host which beds are in which room.",
+  baths:"2 bathrooms + 2 toilets ✓",bathOK:"yes",
+  access:"Whole apartment on one floor ✓, but on the 3rd floor of a 5-floor building with NO elevator: carry bags up 2 flights.",accessOK:"no",
+  station:"5 min walk to Asakusabashi Station (JR Sobu Line to Akihabara 1 stop; Toei Asakusa Line, some trains run through to Narita)",store:"Convenience stores, supermarkets, drugstores nearby (host)",map:"https://www.google.com/maps/search/?api=1&query=convenience+store+near+Asakusabashi+Station",
+  wifi:"Wi-Fi in the room (no pocket Wi-Fi)",extras:"Washer ✓ · no luggage storage (use station lockers)",times:"Check-in 3 PM · Check-out 11 AM (strict)",cancel:"Check listing",
+  meets:["3 enclosed bedrooms","2 full bathrooms","One level inside","5 min to station","Konbini nearby"],gaps:["No elevator: 3rd floor stairs with luggage","No 4th bedroom for the 6th guest","Over ₱80k (₱91,982), within ₱100k stretch"]},
+ {id:"aoto",flag:"Best accessibility",name:"Aoto elevator apartment, 1 min to station",url:"https://www.airbnb.com/rooms/1565947429253811637",area:"Aoto (Katsushika)",price:110774,priceB:[61551,35942],bnote:"The 3-night quote showed two prices (₱35,942 and ₱43,407), probably different units. Confirm with host.",rating:"4.91 ★ (128)",
+  sleep:[["Couple 1 · Mabelle & Brian","Bedroom 1"],["Couple 2 · Dun Lee & Jane","Bedroom 2"],["Sharol","Bedroom 3 (own room)"],["Eman","Living room: ask if there's a sofa bed"]],sleepNote:"Listing has several units; the 3-bedroom unit sleeps up to 7 with 2 bathrooms. Ask host to confirm we get that unit.",
+  baths:"3-bedroom unit: 2 bathrooms + 2 toilets ✓",bathOK:"yes",
+  access:"Elevator ✓, one-level apartment ✓. Exception: Room 601 needs one flight of stairs from the 5th floor. Ask for a unit on floors 2–5.",accessOK:"yes",
+  station:"1 min (80 m) to Keisei Aoto Station: Narita about 45 min, Asakusa about 15 min, Ueno about 20 min, Shinjuku about 40 min (host)",store:"Supermarkets, convenience stores, cafés around the station (host)",map:"https://www.google.com/maps/search/?api=1&query=convenience+store+near+Aoto+Station",
+  wifi:"Wi-Fi listed",extras:"Washer ✓ · free early check-in from 11:00 if the room is ready · luggage storage area in building",times:"Check-in 4 PM · Check-out 10 AM",cancel:"Check listing",
+  meets:["3 enclosed bedrooms","2 full bathrooms","Elevator + one level","1 min to station","Great for the early Narita flight","Luggage storage"],gaps:["Over the stretch budget (₱110,774)","No 4th bedroom; sofa bed unconfirmed","Not Shinjuku"]},
+ {id:"hori",flag:"Confirmed 2 shower rooms",name:"Horikiri 3-bedroom house, 2 shower rooms",url:"https://www.airbnb.com/rooms/1604229305583975039",area:"Horikiri-Shobuen (Katsushika)",price:98282,priceB:[53514,41074],rating:"4.88 ★ (24)",
+  sleep:[["Sharol","Bedroom A, 1st floor (2 double beds, own room)"],["Couple 1 · Mabelle & Brian","Bedroom B, 2nd floor (2 double beds)"],["Couple 2 · Dun Lee & Jane","Bedroom C, 2nd floor (1 double bed)"],["Eman","Living room sofa (not a sofa bed): ask host for a futon"]],sleepNote:"Exact layout from the listing floor plan.",
+  baths:"Shower room + toilet on each floor ✓ (2 full)",bathOK:"yes",
+  access:"Ground-floor entry ✓, but 2-storey house with an indoor staircase to bedrooms B and C.",accessOK:"no",
+  station:"10 min flat walk to Keisei Horikiri-Shobuen Station (host says easy with heavy luggage)",store:"Check map",map:"https://www.google.com/maps/search/?api=1&query=convenience+store+near+Horikiri-Shobuen+Station",
+  wifi:"High-speed Wi-Fi",extras:"Washer-dryer ✓ · balcony · small (56 m²)",times:"Check listing",cancel:"Check listing",
+  meets:["3 enclosed bedrooms","2 full bathrooms","Ground-floor entry","Washer-dryer"],gaps:["Indoor stairs","No sofa bed for the 6th guest","10 min walk (upper limit)","₱98,282: just under the ₱100k stretch"]},
+ {id:"asakusa",flag:"Walk to Senso-ji",name:"Asakusa 3rd-floor apartment, 3 bedrooms with en-suite bathrooms",url:"https://www.airbnb.com/rooms/18813428",area:"Asakusa (Taito)",price:91982,priceB:[50483,38955],rating:"4.6 ★ (62)",
+  sleep:[["Couple 1 · Mabelle & Brian","Bedroom 1 (double)"],["Couple 2 · Dun Lee & Jane","Bedroom 2 (double)"],["Sharol","Bedroom 3 (double, own room)"],["Eman","No 4th bed: max 6 guests and only 3 double beds"]],sleepNote:"3 double beds only. The 6th guest would need a futon the host may not allow.",
+  baths:"2 bathrooms, each with toilet ✓",bathOK:"yes",
+  access:"One-level apartment ✓, but 3rd floor with NO elevator.",accessOK:"no",
+  station:"3 min walk to Asakusa Station (host); Toei Asakusa Line has through trains to Narita",store:"Check map",map:"https://www.google.com/maps/search/?api=1&query=convenience+store+near+Asakusa+Station",
+  wifi:"Wi-Fi in the room",extras:"Washer ✓ · no luggage storage",times:"Check-in 3 PM · Check-out 11 AM (strict)",cancel:"Check listing",
+  meets:["3 enclosed bedrooms","2 full bathrooms","3 min to station","One level inside"],gaps:["No elevator","No sleeping spot for the 6th guest","Over ₱80k"]}
+];
+const NEAR=[
+ ["Takasago 3-storey house","https://www.airbnb.com/rooms/1269204884868049507","₱71,630","2 toilets but showers unclear; tatami rooms with futons; 3 floors of stairs"],
+ ["Hirai house, 5 min JR Hirai","https://www.airbnb.com/rooms/1405455343038181037","₱90,233","Only 1 bathroom (2 toilets); the solo guest could have the 1st-floor single room"],
+ ["\"NT08\" 4-bedroom house, Adachi","https://www.airbnb.com/rooms/1360075053515858413","₱98,428","4 bedrooms but only 1 bathroom; 3 floors"],
+ ["HAPPY HOME, Kita","https://www.airbnb.com/rooms/1486575487993420214","₱99,932","Has a sofa bed for the 6th guest, but bathing on one floor only; 3 floors"],
+ ["Elevator apartment near Takadanobaba (Shinjuku ward)","https://www.airbnb.com/rooms/1794970045093592678","₱119,115","Closest Shinjuku match: elevator, 3BR, 2 baths, 10 min walk. Over budget; new listing, no reviews"]
+];
+const PP=v=>"₱"+Math.round(v/6).toLocaleString();
+const OKP={yes:'<span class="pill s-confirmed">Meets</span>',no:'<span class="pill s-book">Compromise</span>',verify:'<span class="pill s-verify">To verify</span>'};
+$("#stayCards").innerHTML=STAYS.map((s,i)=>`<article class="card stay ${i===0?"rec":""}"><span class="rec-flag" style="${i===0?"":"background:var(--blue)"}">${esc(s.flag)}</span>
+ <div class="top"><div><h3><a href="${s.url}">${i+1}. ${esc(s.name)} ↗</a></h3><div class="small muted">${s.area} · ${s.rating}</div></div></div>
+ <div class="row" style="margin:.5rem 0">${s.id==="dragon"?'<span class="pill s-confirmed">Booked ✓</span>':'<span class="pill s-estimated">Not chosen</span>'}</div>
+ <div class="row" style="justify-content:space-between"><div><div class="price num">₱${s.price.toLocaleString()}</div><div class="small muted">Tokyo, 8 nights, Airbnb total</div></div><div style="text-align:right"><div class="price num">${PP(s.price)}</div><div class="small muted">per person</div></div></div>
+ <div class="note" style="margin:.7rem 0"><b>Who sleeps where</b><ul class="clean small" style="margin-top:4px">${s.sleep.map(x=>`<li><b>${esc(x[0])}:</b> ${esc(x[1])}</li>`).join("")}</ul><div class="small muted" style="margin-top:4px">${esc(s.sleepNote)}</div></div>
+ <dl class="facts"><dt>Bathrooms</dt><dd>${OKP[s.bathOK]} ${esc(s.baths)}</dd><dt>Stairs/lift</dt><dd>${OKP[s.accessOK]} ${esc(s.access)}</dd><dt>Station</dt><dd>${esc(s.station)}</dd><dt>Konbini</dt><dd>${esc(s.store)} · <a href="${s.map}">map ↗</a></dd><dt>Wi-Fi</dt><dd>${esc(s.wifi)}</dd><dt>Extras</dt><dd>${esc(s.extras)}</dd><dt>Times</dt><dd>${esc(s.times)}</dd><dt>Cancel</dt><dd>${esc(s.cancel)}</dd></dl>
+ <p class="small"><b>Meets:</b> ${s.meets.map(esc).join(" · ")}<br><b>Compromises:</b> ${s.gaps.map(esc).join(" · ")}</p></article>`).join("");
+$("#nearList").innerHTML=NEAR.map(n=>`<tr><td><a href="${n[1]}">${esc(n[0])} ↗</a></td><td class="n">${n[2]}</td><td>${esc(n[3])}</td></tr>`).join("");
+
+const WISH=[
+ ["Dragon Inn, Horikiri-Shobuen (4BR)","1404670321568554684","₱73,410","maybe","Top match in budget. 4 bedrooms, 2 min to station. Confirm 2 showers + stairs."],
+ ["Aoto elevator apartment","1565947429253811637","₱110,774","maybe","Best access (elevator, 1 min station, 2 baths) but over the ₱100k stretch."],
+ ["Koiwa 201 (2F–3F), JR Koiwa","1716525271011636693","₱103,271","maybe","4BR, title says 2 bathrooms + 2 toilets, 5–6 min to JR Sobu Line (direct to Akihabara/Shinjuku). Duplex on 2nd–3rd floor = stairs. Slightly over stretch."],
+ ["Kitasenju 4BR (80 m²)","1355684048305044194","₱77,910","no","Great rooms (4 bedrooms + sofa bed, 300 Mbps Wi-Fi) but 2 toilets with likely 1 bathroom, 3 floors, 12 min walk."],
+ ["Tateishi 5LDK","1581574540383602202","₱80,333","no","5 bedrooms, but only 1 bathroom (2 toilets). 2-storey."],
+ ["Tateishi 3BR (84 m²)","1080897078465954022","₱97,198","no","Has a sofa bed, flat 6 min walk, but only 1 bathroom (2 toilets)."],
+ ["Kanegafuchi new 3BR (60 m²)","1804682690166656595","₱77,131","no","Sofa bed for the 6th person, flat 5 min walk, but 1 bathroom and 3 floors."],
+ ["Horikiri 4LDK (3 floors)","1647766328403141512","₱82,680","no","Toilet on each floor but bathrooms unclear; 3 floors, no elevator, 11 min walk."],
+ ["Yotsugi 4 rooms","1467933481531082715","₱106,777","no","One shower room mentioned, 10 min walk, over stretch."],
+ ["Kanegafuchi 3BR, 8 min","1583830076541719847","₱97,496","maybe","Few details on bathrooms/stairs. Ask host before considering."],
+ ["Kamata 3LDK","1755292139299351521","₱76,367","no","Haneda side (far from Narita), construction next door until about Jun 2027, stairs."],
+ ["Edogawa house (1 bedroom)","1374921730943421876","₱61,048","no","Only 1 bedroom."],
+ ["Sumida \"1 line to airport\"","884382803382646921","–","no","Not available Apr 13–21."],
+ ["Fuji lakeside villa","1561623003270462631","–","no","Not needed now (no overnight); also unavailable Apr 17–18."],
+ ["5 small units (Senzoku, SummerSong, Riverside Base, Kitasenju 1BR…)","","–","no","Max 3–4 guests each. Would mean booking 2 places."]
+];
+const WV={yes:'<span class="pill s-confirmed">Fits</span>',maybe:'<span class="pill s-verify">Maybe: ask host</span>',no:'<span class="pill s-book">Doesn\'t fit</span>'};
+$("#wishList").innerHTML=WISH.map(w=>`<tr><td>${w[1]?`<a href="https://www.airbnb.com/rooms/${w[1]}">${esc(w[0])} ↗</a>`:esc(w[0])}</td><td class="n">${w[2]}</td><td>${WV[w[3]]} ${esc(w[4])}</td></tr>`).join("");
+
+/* ITINERARY */
+const G=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+const K=q=>"https://www.klook.com/en-PH/search/result/?query="+encodeURIComponent(q);
+const DAYS=[
+ {d:"13",w:"Tue",t:"Land 08:10 + Skytree area, easy day",area:"Narita T2 → home base → Oshiage",walk:1,
+  m:"Flight 5J 5062 lands 08:10 (2 AM flight, so little sleep). Immigration with Visit Japan Web QR, bags, eSIM, 7-Eleven ATM, Suica.",
+  a:"Keisei train to Horikiri-Shobuen (Dragon Inn, about 1–1.5 h). Drop bags if the host allows (or station lockers). Then to Oshiage: Jukken Bridge photo (upside-down Skytree in the canal) → walk ≈10 min to the Solamachi East Yard entrance (Oshiage Stn side, by the taxi stand, next to The Matcha Tokyo) for the free escalator photo → lunch and window-shopping at Solamachi → Pokémon Center.",
+  e:"Check in (3–4 PM), shower, nap. Dinner: first Japanese ramen at Ichiran Ueno (Keisei train ≈15 min to Keisei Ueno, then a short walk into Atre Ueno). Early night.",
+  lunch:["Tokyo Solamachi restaurant floors (Skytree Town)",G("1-1-2 Oshiage, Sumida City, Tokyo 131-0045")],dinner:["Ichiran Ueno (Atre Ueno, Yamashita exit): famous tonkotsu ramen, open 24 h, ≈¥1,080 a bowl","https://en.ichiran.com/shop/tokyo/ueno"],
+  klook:[],move:"Keisei / Access Express ≈¥1,300–1,500 (estimate)",cost:{t:1700,a:0,f:3500},book:"Ask host about early bag drop",photo:"Upside-down Skytree at Jukken Bridge; Skytree escalator shot (TikTok trend); first konbini haul",wear:"Comfy travel set: joggers, soft knit, sneakers, light jacket",rain:"Solamachi is indoors",rest:"Nap after check-in"},
+ {d:"14",w:"Wed",t:"Ueno + Akihabara day",area:"Ueno · Okachimachi · Akihabara",walk:3,
+  m:"Ueno Park stroll → Ameyoko market street (snacks, cheap souvenirs) → lunch at Tonkatsu Yamabe near Okachimachi Stn, at the Okachimachi end of Ameyoko. Go at 11 AM opening to beat the lunch line.",
+  a:"JR 1 stop from Okachimachi to Akihabara (or ≈10 min walk). Yodobashi Camera Multimedia Akiba: one big 9-floor building for cameras, electronics, toys, beauty gadgets, with a restaurant floor on top. Then Akihabara Radio Kaikan (anime/figures) and Super Potato (retro games).",
+  e:"Bic Camera AKIBA for gadgets and electronics → JR Chuo Line to Shinjuku (≈15 min) → early dinner at Gyukatsu Motomura Shinjuku South Exit (about 5:30 PM) → free TOKYO Night & Light projection mapping on the Tokyo Metropolitan Government Building (shows from about 7 PM; check the timetable) → free 45F South observation deck (open to 10 PM) → optional: Shinjuku Batting Center in Kabukicho → train home. Tax-free: bring your passport for purchases over ¥5,000.",
+  lunch:["Tonkatsu Yamabe Okachimachi: crispy pork cutlet set, ≈¥1,000. Backup: Minatoya seafood bowls on Ameyoko",G("6 Chome-2-6 Ueno, Taito City, Tokyo 110-0005, Japan")],dinner:["Gyukatsu Motomura Shinjuku South Exit (beef cutlet; expect a queue). Backups: Katsukura tonkatsu at Takashimaya Times Square 14F, or Godaigo izakaya on NS Building 29F near the Metropolitan Government Building",G("3-32-2 Shinjuku, Shinjuku City, Tokyo 160-0022, Japan")],
+  klook:[["Akihabara activities on Klook",K("Akihabara")]],move:"JR/Metro hops ≈¥600",cost:{t:600,a:0,f:4500},book:"Nothing required",photo:"Ameyoko signs; Akiba neon at dusk; Yodobashi façade",wear:"Comfy shoes; a tote for shopping",rain:"Akihabara is mostly indoors",rest:"Yodobashi restaurant floor; Ueno Park benches"},
+ {d:"15",w:"Thu",t:"Harry Potter + Shibuya games & food",area:"Toshimaen (Harry Potter Studio) → Shibuya",walk:2,
+  m:"Harry Potter Studio Tour Tokyo (book the 9:30 slot): real film sets like the Great Hall and Diagon Alley, costumes, props, Butterbeer. Plan 3–4 hours. Getting there: train to Ikebukuro, then Seibu Line to Toshimaen (≈20 min from Ikebukuro).",
+  a:"Train to Shibuya (≈40 min) → late lunch at Shibuya Yokocho (Miyashita Park, 3 min from the station) → snack crawl as you go (crepes, taiyaki, konbini treats) → Shibuya Parco 6F: Nintendo Tokyo, Pokémon Center (life-size Mewtwo), Jump Shop (One Piece, Jujutsu Kaisen), Capcom → MEGA Don Quijote Shibuya for cheap snacks and pasalubong.",
+  e:"Shibuya Crossing + Hachiko → Shibuya Sky at sunset (optional, book ahead) → dinner at Ikura (chef slices the omelette open on the teppan) → home.",
+  lunch:["Late lunch (≈2 PM) at Shibuya Yokocho, Miyashita Park 1F: ~20 casual stalls with food from all over Japan, ≈¥1,000. Everyone picks what they like; open all afternoon, no lunch-break closing. Only a Butterbeer + snack at the studio","https://maps.app.goo.gl/ynDm5TsdUDHzSkVR6"],dinner:["Ikura Shibuya: hamburg steak omurice (≈¥2,000). Small shop, limited servings, so reserve online. Backup: Uobei sushi nearby",G("5-3 Maruyamacho, Shibuya City, Tokyo")],
+  klook:[["Harry Potter Studio Tour Tokyo tickets",K("Harry Potter Studio Tour Tokyo")],["Shibuya Sky tickets",K("Shibuya Sky")]],move:"Trains ≈¥1,000",cost:{t:1000,a:6500,f:5000,o:2500},book:"Harry Potter Studio timed tickets (from about ¥6,300 adult, price depends on the date) + Ikura dinner for 6 (online on Tabelog) + Shibuya Sky sunset slot (optional)",photo:"Great Hall and Diagon Alley; Platform 9¾; Mewtwo at Pokémon Center; Shibuya Crossing from above",wear:"Comfy shoes; light jacket for evening",rain:"Almost all indoors",rest:"Studio cafés; Parco benches"},
+ {d:"16",w:"Fri",t:"Asakusa culture + chopstick making",area:"Asakusa · Kappabashi",walk:2,
+  m:"9:00 kimono rental first (1-7-1 Hanakawado, a few minutes from Senso-ji; ≈45 min to get dressed and hair done) → walk to Kaminarimon → Senso-ji and Nakamise snacks in kimono (best photos!). Book the kimono slot ahead.",
+  a:"Return the kimono (the workshop has sawdust, so change first) → lunch at Unatoto (cheap, casual unagi bowls, right by the kimono shop) → Klook chopstick-making workshop in Asakusa (about 1 h) → Kappabashi kitchen street (knives, food samples; optional food-sample making).",
+  e:"Cook-your-own okonomiyaki and monjayaki dinner at Tsurujiro (fun for a group, English menu) → big Don Quijote haul at the Asakusa store (open 24 h, a few minutes away; tax-free with passport) → optional drinks on Hoppy Street after.",
+  lunch:["Unatoto Asakusa: unagi (eel) bowls from ≈¥1,100, the double unadon is the favorite. Not into eel? Backup: Asakusa Gyukatsu (beef cutlet, English menu, ≈¥2,100 set, 2-17-10 Kaminarimon B1F)",G("1-5-2 Hanakawado, Taito City, Tokyo")],dinner:["Tsurujiro: DIY okonomiyaki + monjayaki on your own table grill (≈¥2,000). Backup: Gyu-Kaku Asakusa yakiniku (all-you-can-eat from ≈¥3,300, rooms for 6, can reserve; 1-32-11 Asakusa B1F)",G("1-20-8 Asakusa, Taito City, Tokyo")],
+  klook:[["Asakusa chopstick-making workshop (4.9 ★)","https://www.klook.com/activity/175429-tokyo-asakusa-chopstick-making-workshop"],["Asakusa kimono rental",K("Asakusa kimono rental")],["Kappabashi food sample making",K("food sample making Tokyo")]],move:"Short train from home or walk ≈¥300",cost:{t:300,a:2500,f:5000,o:4000},book:"Chopstick workshop time slot; kimono (optional)",photo:"Group kimono shot at Kaminarimon lantern; Senso-ji pagoda in kimono; flipping okonomiyaki (video!)",wear:"Flat shoes for temple stones; kimono rental optional",rain:"Workshops are indoors; covered shopping arcades",rest:"Sumida Park benches"},
+ {d:"17",w:"Sat",t:"Mt. Fuji photo loop (no backtracking)",area:"Kawaguchiko → Fujiyoshida → Yamanakako → Fuji City",walk:3,
+  m:"7:00 pickup at Dragon Inn (private van). Chuo Expressway to Kawaguchiko: Fuji Lawson photo → Chureito Pagoda (398 steps) → Honcho-dori Fuji street. All on the north side, 5–15 min apart.",
+  a:"Local lunch: Yoshida udon at a small family shop in Fujiyoshida (cash only, go before 12, they close when the noodles run out) → Lake Yamanaka (Nagaike Shinsui Park, the lakeside fence photo). Each stop is further along, so no going back.",
+  e:"Down past Gotemba to Fuji City for the Dream Bridge stairs (sunlight on Fuji's face in the late afternoon) → Tomei Expressway straight back to Tokyo, home ≈7:30 PM. One big loop around Fuji.",
+  lunch:["Yoshida udon at Tsuruya Shokudo, a ≈70-year-old family shop (backup: Higashi-ura or Horibata Udon). Cash only",G("2-12-9 Asahi, Fujiyoshida, Yamanashi")],dinner:["Easy dinner near home after a long day",G("restaurants near Horikiri-Shobuen Station")],
+  klook:[["Private van tour for 6, custom route (send the driver this loop)",K("mt fuji private tour")],["Cheaper: shared 5-photo-spots bus tour (no Yamanakako, order set by the tour)","https://www.klook.com/activity/108983-mount-fuji-arakurayama-sengen-park-yumeno-hashi-join-one-day-bus-trip-instagram-photogenic-tokyo/"]],move:"Private van all day (one loop: Chuo Expressway out, Tomei Expressway back)",cost:{t:9000,a:0,f:5000},book:"Private van for 6 with this exact stop order (get 2–3 quotes, split by 6)",photo:"Fuji Lawson; Chureito pagoda; Honcho-dori; Nagaike lakeside fence; Dream Bridge stairs",wear:"Warm coat and layers (Yamanaka is ≈1,000 m up); comfy shoes for 398 steps",rain:"If Fuji is hidden in the morning, have lunch first and do the photo stops after; clouds often clear later",rest:"Van naps between stops"},
+ {d:"18",w:"Sun",t:"Snow day: GALA Yuzawa",area:"Niigata (Shinkansen day trip)",walk:2,
+  m:"6:50 leave Dragon Inn → 2-min walk to Keisei Horikiri-Shobuen → Keisei Main Line to Keisei Ueno (≈15 min) → walk to JR Ueno, follow the green Shinkansen signs (platforms are deep underground, allow 15 min) → about 7:40 Joetsu Shinkansen \"Tanigawa\" bound for GALA Yuzawa (check the board says GALA湯沢) → arrive about 9:00. You walk out of the gate straight into the ski center: rent wear and boots there.",
+  a:"Gondola up to the snow-play area: sledding, snowmen, snow fights, photos. Lunch at the ski center. Head down by about 3 PM to return rentals.",
+  e:"About 4 PM direct Shinkansen GALA Yuzawa → Ueno (≈80 min; in late April the last direct train has left around 4 PM, so don't miss it) → easy dinner around Ueno Station → Keisei home (15 min).",
+  lunch:["GALA ski-center food court",""],dinner:["Around Ueno Station (Atre Ueno restaurants or Ameyoko), then Keisei straight home",G("Atre Ueno, 7-1-1 Ueno, Taito City, Tokyo 110-0005, Japan")],
+  klook:[["GALA Yuzawa packages",K("GALA Yuzawa")]],move:"Keisei Horikiri-Shobuen↔Keisei Ueno ≈¥300 each way (estimate) + Shinkansen Ueno↔GALA ≈¥14,000 round trip",cost:{t:14020,a:5000,f:3500,o:4000},book:"Shinkansen seats early (weekend); gondola/rental package. Go/no-go from GALA's 6 AM update.",photo:"Snowy slope group shot; gondola view",wear:"Waterproof layers, gloves, grippy boots (rent there)",rain:"No snow? Relaxed Tokyo day instead (Ueno museums, Yanaka old town)",rest:"Ski-center lounges; train rides"},
+ {d:"19",w:"Mon",t:"Tsukiji, Ginza, Tokyo Tower (late start)",area:"Tsukiji · Ginza · Tokyo Tower",walk:2,
+  m:"Sleep in after 2 early days. About 10:00 Tsukiji Outer Market: walk around and snack (tamagoyaki, wagyu skewers) → walk 10 min to Ginza for lunch.",
+  a:"Ginza: Uniqlo flagship, Itoya stationery, department-store food halls, then a stroll down Namiki-dori (tree-lined street with luxury brand shops and galleries; window-shopping is free). Option: Ginza chopstick workshop if we skipped Friday's.",
+  e:"Early dinner (about 5 PM) at Ginza Tenryu: jumbo gyoza → Mita Line Hibiya → Onarimon (2 stops) → photo walk: Shiba Park tree-lined path (Exit A6) around sunset (the tower lights up after dark) → after dark: the parking-lot stairs and the 7-Eleven crosswalk near Akabanebashi Stn for the lit-up tower. Optional if the group wants: teamLab Planets in Toyosu after (≈35 min by train; book a late slot, you wade in water).",
+  lunch:["Ginza Kagari: creamy chicken paitan ramen, Michelin Bib Gourmand, ≈¥1,000–1,500. Small counter with a queue, so you may sit in 2 groups. Backups: RANGETSU of TOKYO (hamburger steak/curry lunch ≈¥1,000, 3-5-8 Ginza) or Ginza HARU CHAN Ramen (shio ramen, Bib Gourmand, open all day, 3-11-6 Ginza)",G("6-4-12 Ginza, Chuo City, Tokyo 104-0061, Japan")],dinner:["Ginza Tenryu: jumbo pan-fried gyoza (no garlic or chives) + Chinese dishes, ≈¥1,000–3,000. 2-5-19 Ginza, PUZZLE GINZA 4F. Walk-in. Backup: LaLaport Toyosu food court next to teamLab",G("2-5-19 Ginza, Chuo City, Tokyo 104-0061, Japan")],
+  klook:[["teamLab Planets tickets (optional)",K("teamLab Planets")],["Ginza chopstick workshop (4.9 ★, 538 reviews)","https://www.klook.com/activity/173208-tokyo-chopstick-making-workshop-with-artisan/"]],move:"Metro ≈¥700",cost:{t:900,a:0,f:5000},book:"Nothing needed for the Tokyo Tower photo spots (all free). teamLab time slot only if the group wants it",photo:"Tokyo Tower lit up at night; Ginza crossing; teamLab mirror rooms (optional)",wear:"Comfy shoes; pants that roll up only if doing teamLab",rain:"Almost all indoors",rest:"Ginza department-store rooftops"},
+ {d:"20",w:"Tue",t:"Last full day: chill shopping + farewell dinner",area:"Shin-Okubo · Shinjuku · Don Quijote",walk:3,
+  m:"Shin-Okubo Korea Town: K-beauty shops + Korean street food.",
+  a:"Shinjuku: Lumine/Isetan, Bic Camera, Uniqlo. Tax-free: bring passports.",
+  e:"Sumo show at Shinjuku Sumo Club (Klook, about 1 h: live bouts, English MC, photo with the wrestlers; pick the 5 PM slot) → relaxed farewell yakitori dinner at Omoide Yokocho (Memory Lane, by Shinjuku Stn West Exit) → home by about 9 PM: pack, put tax-free items in your carry-on, sleep early (wake-up about 4:00 AM).",
+  lunch:["Shin-Okubo Korean street food (cheese hotdogs, tteokbokki) or Korean BBQ",G("Shin-Okubo Station, Shinjuku City, Tokyo")],dinner:["Omoide Yokocho (Memory Lane): yakitori skewers in tiny lantern-lit stalls; you may split into small groups. Backup: Gyu-Kaku Shinjuku yakiniku (all 6 at one table)",G("1-2 Nishishinjuku, Shinjuku City, Tokyo 160-0023, Japan")],
+  klook:[["Shinjuku Sumo Live Show with Photo (show, not real practice)",K("Sumo Live Show with Photo in Shinjuku")]],move:"JR ≈¥600",cost:{t:600,a:10000,f:5500},book:"Sumo show on Klook (choose the Shinjuku Sumo Club listing, early-evening slot); farewell dinner reservation (optional)",photo:"Shin-Okubo street; Kabukicho Godzilla head; red lanterns at Omoide Yokocho",wear:"Your favorite outfit; bring a foldable bag for shopping",rain:"Malls everywhere",rest:"Café break in Shinjuku"},
+ {d:"21",w:"Wed",t:"4 fly home (08:55) · Dun Lee & Jane may stay",area:"Home → Narita T2",walk:1,
+  m:"Wake about 4:00, self check-out, leave about 4:45 by pre-booked van or first trains. Narita T2 by about 6:00: do the customs tax-refund check FIRST (carry the items + passport), then check in. Counters close 08:10.",
+  a:"Flight 5J 5063 lands in Cebu 1:15 PM. Dun Lee & Jane: if staying on, move to their own booking, then a relaxed day (Shibamata old town, Ueno museums or last shopping).",
+  e:"Dun Lee & Jane (if staying): last dinner, pack.",
+  lunch:["Dun Lee & Jane: Shibamata Taishakuten street snacks (dango)",G("Shibamata Taishakuten, Katsushika City, Tokyo")],dinner:["Dun Lee & Jane: their pick",""],
+  klook:[],move:"First trains ≈¥1,400 or van (quote)",cost:{t:1400,a:0,f:1500},book:"Early ride to Narita; Dun Lee & Jane book their own stay if staying on",photo:"Last group photo at the gate",wear:"Comfy travel set",rain:"No change",rest:"Sleep on the plane"},
+ {d:"22",w:"Thu",t:"Dun Lee & Jane fly home (if staying on)",area:"Narita (flight to confirm)",walk:1,
+  m:"Dun Lee & Jane check out of their own stay and head to the airport (flight details to add).",a:"–",e:"–",
+  lunch:["Airport",""],dinner:["Home",""],klook:[],move:"Train or bus to the airport",cost:{t:1400,a:0,f:1500},book:"Their flight details",photo:"–",wear:"Comfy travel set",rain:"–",rest:"–"}
+];
+/* stops: [slot, emoji, name, where, why, maps query, optional extra link] */
+const PLIMG={"Unatoto (lunch)":"pl/unagi.jpg","Tsurujiro (okonomiyaki dinner)":"pl/okonomi.jpg","Kimono rental first (optional)":"pl/kimono.jpg","Jukken Bridge (upside-down Skytree)":"pl/jukken.jpg","Skytree escalator photo (TikTok trend)":"pl/skytree-up.jpg","Harry Potter Studio Tour Tokyo":"pl/hp-studio.jpg","MEGA Don Quijote Shibuya":"pl/donki.jpg","Van pickup at Dragon Inn":"walk-8.jpg","Lake Yamanaka: Nagaike Shinsui Park":"pl/yamanaka.jpg","Tsuruya Shokudo (Yoshida udon)":"pl/udon.jpg","Tonkatsu Yamabe (lunch)":"pl/tonkatsu.jpg","Kichi Kichi omurice":"pl/omurice.jpg","Ikura (omurice)":"pl/omurice.jpg","Tomei Expressway home":"walk-8.jpg","Mt. Fuji Dream Bridge (Yume no Ohashi)":"pl/dream-bridge.jpg","Honcho-dori (Fuji street)":"pl/fuji-street.jpg","Shinkansen to Kyoto":"pl/shinkansen.jpg","Fushimi Inari":"pl/ky-inari.jpg","Kiyomizu-dera":"pl/ky-kiyomizu.jpg","Sannenzaka & Ninenzaka":"pl/ky-sannen.jpg","Gion":"pl/ky-gion.jpg","Pontocho (backup dinner)":"pl/ky-ponto.jpg","Arashiyama Bamboo Grove":"pl/ky-bamboo.jpg","Tenryu-ji garden":"pl/ky-tenryu.jpg","Togetsukyo Bridge":"pl/ky-togetsu.jpg","Nishiki Market (optional)":"pl/ky-nishiki.jpg","Shinkansen back to Tokyo":"pl/ky-tower.jpg","Easy dinner near home":"walk-3.jpg","Narita Airport T2":"pl/1725111503165-2f9f0d.jpg","Keisei train to Dragon Inn":"walk-1.jpg","Tokyo Skytree Town & Solamachi":"pl/1614932750312-440cdf.jpg","Pokémon Center Skytree Town":"pl/1766090503766-623b62.jpg","Skytree Tembo Deck (optional)":"pl/1604928141064-207cea.jpg","Ichiran Ueno":"pl/1591325418441-ff678b.jpg","Ueno Park":"ueno.jpg","Ameyoko Market":"pl/1707739371498-bd8a38.jpg","Yodobashi Camera Akiba":"akiba.jpg","Akihabara Radio Kaikan":"pl/1767938079147-ae93a4.jpg","Super Potato":"pl/1741512612531-8aa48a.jpg","Meiji Jingu Shrine":"pl/1784035039546-16a810.jpg","Takeshita Street":"pl/1664806462678-5df015.jpg","@cosme Tokyo":"harajuku.jpg","Cat Street & Omotesando":"pl/1614230320307-2478d7.jpg","Shibuya Parco 6F (Nintendo, Pokémon, Jump Shop)":"pl/1677774397085-3f7aa5.jpg","Shibuya Crossing + Hachiko":"pl/1547448526-5e9d57fa2.jpg","Shibuya Sky (optional)":"pl/1622989428689-569c4f.jpg","Uobei Shibuya (backup)":"pl/1744209315622-61379e.jpg","Senso-ji & Kaminarimon":"pl/1580167227251-be70f0.jpg","Nakamise Street":"pl/1601376754000-117ee1.jpg","Chopstick-making workshop":"pl/1544621678-f17b5b909.jpg","Kappabashi Kitchen Street":"asakusa.jpg","Kimono rental (optional)":"pl/1675695165471-184b75.jpg","Sumida River & Azuma Bridge":"pl/1727326498926-65509c.jpg","Hoppy Street":"pl/1676763349789-2ee123.jpg","Mt. Fuji tour meet-up":"shinjuku.jpg","Chureito Pagoda":"pl/1677254817050-cb9b29.jpg","Honcho-dori":"pl/1675610598855-a2a9d2.jpg","Oishi Park, Lake Kawaguchi":"pl/1719337763939-7633d9.jpg","Fuji Lawson":"lawson.jpg","Omoide Yokocho":"pl/1617870314635-fc8195.jpg","Tokyo Station → Joetsu Shinkansen":"pl/1690971324341-94fac8.jpg","GALA Yuzawa":"pl/1642753128615-c0ce49.jpg","Snow play area":"snow.jpg","Tokyo Character Street":"pl/1695746998565-242877.jpg","Tokyo Ramen Street":"pl/1632709810780-b5a434.jpg","Tsukiji Outer Market":"tsukiji.jpg","Uniqlo Ginza flagship":"pl/1778454288545-a8bcfa.jpg","Ginza Itoya":"pl/1722197912682-12e963.jpg","Mitsukoshi Ginza food hall":"pl/1717815963416-1e905d.jpg","Lalaport Toyosu":"pl/1671247637657-a76dab.jpg","Shin-Okubo Korea Town":"pl/1778512828600-4a6540.jpg","Shinjuku shopping":"pl/1708446849266-61ad14.jpg","Godzilla Head":"pl/1758496669243-df7808.jpg","Farewell yakiniku":"pl/1773903447504-740815.jpg","Leave Dragon Inn ≈4:45":"walk-8.jpg","Narita T2":"airport.jpg","Shibamata Taishakuten (Dun Lee & Jane)":"pl/1672927964902-25fe42.jpg","Dun Lee & Jane to the airport":"pl/1436491865332-7a61a1.jpg","Backup lunch: Asakusa Gyukatsu":"f-beef.jpg","Backup dinner: Gyu-Kaku Asakusa (yakiniku)":"pl/yakiniku.jpg","Hoppy Street (optional drinks)":"pl/hoppy.jpg","Namiki-dori stroll":"ginza.jpg","Ginza Tenryu (gyoza dinner)":"pl/gyoza.jpg","Sumo show (Shinjuku Sumo Club)":"pl/sumo.jpg","Back to Dragon Inn":"walk-8.jpg","Keisei to Ueno (6:50)":"walk-1.jpg","Ueno → GALA Yuzawa Shinkansen (≈7:40)":"pl/shinkansen.jpg","Shinkansen back (≈4 PM)":"pl/1690971324341-94fac8.jpg","Dinner around Ueno Station":"ueno.jpg","Shibuya Yokocho (late lunch)":"pl/shibuya-yokocho.jpg","Ginza Kagari (lunch)":"f-ramen.jpg","Backup lunch: RANGETSU of TOKYO":"f-beef.jpg","Backup lunch: Ginza HARU CHAN Ramen":"f-ramen2.jpg","OS Drug Ueno (cheap drugstore)":"pl/drugstore.jpg","teamLab Planets (optional)":"pl/1556173251-cab2c1e8a.jpg","Photo spot 1: Shiba Park path":"pl/tt-shibapark.jpg","Photo spot 2: parking-lot stairs":"pl/tt-stairs.jpg","Photo spot 3: Akabanebashi crosswalk":"pl/tt-crosswalk.jpg","TOKYO Night & Light (projection mapping)":"pl/tmg.jpg","Free observation deck (TMG 45F)":"pl/tmg-view.jpg","Shinjuku Batting Center (optional)":"pl/batting.jpg","Don Quijote Asakusa (big haul)":"pl/donki.jpg","Bic Camera AKIBA":"pl/biccamera.jpg","Gyukatsu Motomura Shinjuku South Exit":"f-beef.jpg","Backup dinner: Katsukura (tonkatsu)":"pl/tonkatsu.jpg","Backup dinner: Godaigo (NS Building 29F)":"pl/tmg-view.jpg"};
+const STOPS=[
+ [["Morning","✈️","Narita Airport T2","Arrive 08:10","Immigration, bags, eSIM, ATM, Suica","Narita Airport Terminal 2, Narita, Chiba"],
+  ["Afternoon","🚆","Keisei train to Dragon Inn","Horikiri-Shobuen Stn","≈1–1.5 h, drop bags","5-4-6 Horikiri, Katsushika City, Tokyo 124-0006"],
+  ["Afternoon","🌉","Jukken Bridge (upside-down Skytree)","5-15-4 Narihira, Sumida (≈10 min walk from Skytree)","Skytree reflected in the canal; clearest when there's no wind. Use the phone's 0.5× wide lens","https://maps.app.goo.gl/M4hCmYtJXGPK5bpw9"],
+  ["Afternoon","📸","Skytree escalator photo (TikTok trend)","Solamachi East Yard entrance (Oshiage Stn side, by the taxi stand). Free","Escalator with Skytree straight ahead. The pin is The Matcha Tokyo shop, right at this entrance. One person films from a few steps below","The Matcha Tokyo Skytree Solamachi"],
+  ["Afternoon","🗼","Tokyo Skytree Town & Solamachi","Oshiage / Tokyo Skytree Stn","Lunch, 300+ shops, all indoors","1-1-2 Oshiage, Sumida City, Tokyo 131-0045"],
+  ["Afternoon","⚡","Pokémon Center Skytree Town","Solamachi 4F","Fun souvenir stop for everyone","1-1-2 Oshiage, Sumida City, Tokyo 131-0045"],
+  ["Afternoon","🌆","Skytree Tembo Deck (optional)","Tokyo Skytree","350 m city view, buy on Klook","Tokyo Skytree, Sumida City, Tokyo","https://www.klook.com/en-PH/search/result/?query=Tokyo%20Skytree"],
+  ["Evening","🍜","Ichiran Ueno","Atre Ueno, Ueno Stn","First real Japanese ramen","7 Chome-1-1 Ueno, Taito City, Tokyo 110-0005, Japan","https://en.ichiran.com/shop/tokyo/ueno"]],
+ [["Morning","🌳","Ueno Park","Ueno Stn (Park exit)","Free stroll, temples, maybe late sakura","Ueno Park, Taito City, Tokyo"],
+  ["Morning","🛍️","Ameyoko Market","Ueno / Okachimachi Stn","Quick snacks, cheap souvenirs","Ameyoko Shopping Street, Taito City, Tokyo"],
+  ["Morning","💊","OS Drug Ueno (cheap drugstore)","6-11-5 Ueno, inside Ameyoko","Locals' cheap drugstore for skincare and essentials. Cash only, no tax refund. Opens 10 AM","https://maps.app.goo.gl/ZiLy3WF8tBZydSKU8"],
+  ["Afternoon","🐷","Tonkatsu Yamabe (lunch)","6-2-6 Ueno · 2 min from Okachimachi Stn (North Exit)","Popular local tonkatsu, ≈¥1,000 set. No reservations; small, so you may sit in 2–3 groups","6 Chome-2-6 Ueno, Taito City, Tokyo 110-0005, Japan"],
+  ["Afternoon","📷","Yodobashi Camera Akiba","Akihabara Stn (Showa-dori exit)","9 floors: cameras, gadgets, toys","1-1 Kanda Hanaokacho, Chiyoda City, Tokyo"],
+  ["Afternoon","🧸","Akihabara Radio Kaikan","Akihabara Stn (Electric Town exit)","Anime figures and collectibles","Akihabara Radio Kaikan, Chiyoda City, Tokyo"],
+  ["Afternoon","🎮","Super Potato","Akihabara","Retro games, nostalgic fun","Super Potato Akihabara, Chiyoda City, Tokyo"],
+  ["Afternoon","📸","Bic Camera AKIBA","4-1-1 Sotokanda · 3 min walk from JR Akihabara Stn","7 floors of cameras, gadgets, toys, beauty appliances and snacks. Open 10 AM–10 PM, cards accepted, tax-free with passport","4-1-1 Sotokanda, Chiyoda City, Tokyo 101-0021, Japan"],
+  ["Evening","🥩","Gyukatsu Motomura Shinjuku South Exit","3-32-2 Shinjuku, MOTO Bldg B1F · open 11 AM–11 PM","Beef cutlet you grill yourself (about ¥1,500+). Take the JR Chuo Line from Akihabara (≈15 min), eat about 5:30 PM, then walk ≈15 min west to the Tokyo Metropolitan Government Building. Expect a queue; no reservations","3-32-2 Shinjuku, Shinjuku City, Tokyo 160-0022, Japan"],
+  ["Evening","🏛️","TOKYO Night & Light (projection mapping)","Tomin Plaza, 2-8-1 Nishi-Shinjuku · 10 min walk from Shinjuku Stn West Exit","Free light-and-sound show on the government building, every night except bad weather. Shows start about 7 PM; check the official timetable that day","https://maps.app.goo.gl/8M8DguCq6ccriRSZ8","https://tokyoprojectionmappingproject.jp/en"],
+  ["Evening","🌃","Free observation deck (TMG 45F)","Tokyo Metropolitan Government Building No. 1","Free night view from 202 m. Apr 14 is a Wednesday: South deck open until 10 PM (last entry 9:30 PM)","2-8-1 Nishi-Shinjuku, Shinjuku City, Tokyo 163-8001, Japan","https://www.yokoso.metro.tokyo.lg.jp/en/tenbou/index.html"],
+  ["Evening","⚾","Shinjuku Batting Center (optional)","2-21-13 Kabukicho","Old-school batting cages since 1978; ≈¥300 per 25 pitches. Backup: Oslo Batting Center (2-34-5 Kabukicho, open 10 AM–1 AM)","2-21-13 Kabukicho, Shinjuku City, Tokyo 160-0021, Japan"],
+  ["Evening","🐷","Backup dinner: Katsukura (tonkatsu)","Takashimaya Times Square 14F · 2 min from JR Shinjuku South Exit","Comfy department-store restaurant: pork cutlet sets with free cabbage, rice and miso refills, grind-your-own sesame sauce, English menu. ≈¥2,000; open 11 AM–10 PM (last order 9 PM)","5-24-2 Sendagaya, Shibuya City, Tokyo 151-0051, Japan"],
+  ["Evening","🏙️","Backup dinner: Godaigo (NS Building 29F)","2-4-1 Nishi-Shinjuku · 5 min walk from the Metropolitan Government Building","Casual izakaya (yakitori, oden) with a Shinjuku night view, English menu, cards OK, private rooms. ≈¥4,000. Book ahead for 6","2-4-1 Nishi-Shinjuku, Shinjuku City, Tokyo 163-0830, Japan"]],
+ [["Morning","🧙","Harry Potter Studio Tour Tokyo","Toshimaen Stn (Seibu Line, ≈20 min from Ikebukuro)","Great Hall, Diagon Alley, Hogwarts Express, Butterbeer. 3–4 h, timed tickets","1-1-7 Kasugacho, Nerima City, Tokyo"],
+  ["Afternoon","🏮","Shibuya Yokocho (late lunch)","Miyashita Park South 1F, 6-20-10 Jingumae · 3 min from Shibuya Stn","Indoor alley of about 20 casual eateries with regional Japanese food. Lunch ≈¥1,000; all 6 can pick different stalls and sit together","https://maps.app.goo.gl/ynDm5TsdUDHzSkVR6"],
+  ["Afternoon","🍄","Shibuya Parco 6F (Nintendo, Pokémon, Jump Shop)","Shibuya Parco, 5 min from Hachiko exit","Mario, life-size Mewtwo, One Piece, Street Fighter","https://maps.app.goo.gl/Cd6mTQFYn8nNHRoZ7"],
+  ["Afternoon","🛒","MEGA Don Quijote Shibuya","Udagawa-cho, Shibuya","Crazy discount store: snacks, KitKats, beauty, pasalubong","28-6 Udagawacho, Shibuya City, Tokyo"],
+  ["Evening","🚦","Shibuya Crossing + Hachiko","Shibuya Stn (Hachiko exit)","The famous scramble crossing","Shibuya Scramble Crossing, Shibuya City, Tokyo"],
+  ["Evening","🌇","Shibuya Sky (optional)","Shibuya Scramble Square","Open-air rooftop at sunset","2-24-12 Shibuya, Shibuya City, Tokyo",K("Shibuya Sky")],
+  ["Evening","🍳","Ikura (omurice)","Maruyama-cho, Shibuya (up Dogenzaka, ≈7 min walk)","Chef slices the soft omelette open on the teppan. Dinner 5:30–9 PM, reserve ahead","5-3 Maruyamacho, Shibuya City, Tokyo"],
+  ["Evening","🍣","Uobei Shibuya (backup)","Dogenzaka, Shibuya","Cheap touchscreen sushi if Ikura is full","2-29-11 Dogenzaka, Shibuya City, Tokyo"]],
+ [["Morning","👘","Kimono rental first (optional)","1-7-1 Hanakawado, Asakusa (near Senso-ji)","Get dressed at 9:00, then walk to Kaminarimon. Book ahead","1 Chome-7-1 Hanakawado, Taito City, Tokyo 111-0033, Japan",K("Asakusa kimono rental")],
+  ["Morning","🏮","Senso-ji & Kaminarimon","Asakusa Stn","Tokyo's oldest temple, walk it in kimono","Senso-ji Temple, Taito City, Tokyo"],
+  ["Morning","🍡","Nakamise Street","Asakusa","Snacks: melon pan, ningyo-yaki","Nakamise Shopping Street, Taito City, Tokyo"],
+  ["Afternoon","🍱","Unatoto (lunch)","1-5-2 Hanakawado · next to the kimono shop","Casual unagi bowls, ≈¥1,100–1,500. Open 10 AM–10 PM, no closing day","1-5-2 Hanakawado, Taito City, Tokyo"],
+  ["Afternoon","🥩","Backup lunch: Asakusa Gyukatsu","2-17-10 Kaminarimon, B1F · by Asakusa Stn","If the group doesn't want eel: crispy beef cutlet you finish on a mini grill. English menu, ≈¥2,100 set; expect a queue","2-17-10 Kaminarimon, Taito City, Tokyo 111-0034, Japan"],
+  ["Afternoon","🥢","Chopstick-making workshop","Asakusa Tosei Bldg 10F, 1-27-2 Asakusa","Make your own pair (Klook)","1-27-2 Asakusa, Taito City, Tokyo","https://www.klook.com/activity/175429-tokyo-asakusa-chopstick-making-workshop"],
+  ["Afternoon","🍤","Kappabashi Kitchen Street","Tawaramachi Stn","Fake food samples, knives","Kappabashi Kitchen Town, Taito City, Tokyo"],
+  ["Evening","🥞","Tsurujiro (okonomiyaki dinner)","1-20-8 Asakusa · 3 min from Asakusa Stn","Cook okonomiyaki and monja on your own table grill. Fun for 6; staff help if you're lost","1-20-8 Asakusa, Taito City, Tokyo"],
+  ["Evening","🐧","Don Quijote Asakusa (big haul)","2-10-14 Asakusa · open 24 h, near Tsurujiro","Pasalubong and drugstore haul, tax-free with passport (¥5,000+ in one store). Close to home, so no rushing on the last night","2-10-14 Asakusa, Taito City, Tokyo 111-0032, Japan"],
+  ["Evening","🔥","Backup dinner: Gyu-Kaku Asakusa (yakiniku)","1-32-11 Asakusa, B1F · 3 min from Asakusa Stn Exit 3","If okonomiyaki isn't the vibe: grill-your-own meat, all-you-can-eat courses from ≈¥3,300. Has rooms for 6 and takes reservations","1-32-11 Asakusa, Taito City, Tokyo 111-0032, Japan"],
+  ["Evening","🍢","Hoppy Street (optional drinks)","2-3 Asakusa","Lantern-lit izakaya street, outdoor seats","2-3-19 Asakusa, Taito City, Tokyo"]],
+ [["Morning","🚐","Van pickup at Dragon Inn","Horikiri-Shobuen, 7:00","Chuo Expressway, ≈2 h","5-4-6 Horikiri, Katsushika City, Tokyo 124-0006"],
+  ["Morning","🏪","Fuji Lawson","Stop 1 · Kawaguchiko Stn area","Viral konbini-with-Fuji photo","3495-2 Funatsu, Fujikawaguchiko, Yamanashi"],
+  ["Morning","🗻","Chureito Pagoda","Stop 2 · Arakurayama Sengen Park, Fujiyoshida (≈15 min)","The classic Fuji postcard shot","Chureito Pagoda, Fujiyoshida, Yamanashi"],
+  ["Morning","📸","Honcho-dori (Fuji street)","Stop 3 · Honcho 2-chome, Fujiyoshida (≈5 min)","Street with Mt. Fuji at the end. Stay on the sidewalk","3-13-13 Shimoyoshida, Fujiyoshida, Yamanashi"],
+  ["Afternoon","🍜","Tsuruya Shokudo (Yoshida udon)","Stop 4 · 2-12-9 Asahi, Fujiyoshida (≈5–10 min)","Hidden gem: tiny family shop, handmade chewy udon. Sat 11:00–2:30, closes early if noodles sell out. Cash only","2-12-9 Asahi, Fujiyoshida, Yamanashi"],
+  ["Afternoon","🦢","Lake Yamanaka: Nagaike Shinsui Park","Stop 5 · north shore of Lake Yamanaka (≈20 min)","The lakeside fence + Fuji photo","3222 Hirano, Yamanakako, Yamanashi"],
+  ["Evening","🌉","Mt. Fuji Dream Bridge (Yume no Ohashi)","Stop 6 · Tadehara, Fuji City (≈1h15 via Gotemba)","The stairs that look like they go up to Fuji","35.1514403,138.6760618"],
+  ["Evening","🏠","Tomei Expressway home","≈2h30 to Dragon Inn","Home ≈7:30 PM","5-4-6 Horikiri, Katsushika City, Tokyo 124-0006"]],
+ [["Morning","🚃","Keisei to Ueno (6:50)","Horikiri-Shobuen Stn → Keisei Ueno, ≈15 min","2-min walk from the house. Then walk to JR Ueno (follow the green Shinkansen signs)","Horikiri-Shobuen Station, Katsushika City, Tokyo"],
+  ["Morning","🚄","Ueno → GALA Yuzawa Shinkansen (≈7:40)","JR Ueno Stn, Shinkansen gates (deep underground)","Board a \"Tanigawa\" train whose destination says GALA Yuzawa (not every train goes there). ≈80 min","Ueno Station, Taito City, Tokyo 110-0005, Japan"],
+  ["Morning","⛷️","GALA Yuzawa","GALA Yuzawa Stn","Station, rentals, lockers and gondola are all in one building (Cowabunga ski center). Non-skiers: gondola ticket only, ride up to the snow-play park at Cheers. SPA Gala-no-Yu onsen in the same building","GALA Yuzawa Station, Yuzawa, Niigata","https://gala.co.jp/en/winter/"],
+  ["Afternoon","☃️","Snow play area","Top of the gondola","Sledding, snowmen, snow fights","GALA Yuzawa Station, Yuzawa, Niigata"],
+  ["Afternoon","🚄","Shinkansen back (≈4 PM)","GALA Yuzawa Stn → Ueno, ≈80 min","Late April: the last direct train has left around 4 PM. Be at the station 20 min early","GALA Yuzawa Station, Yuzawa, Niigata"],
+  ["Evening","🍜","Dinner around Ueno Station","Atre Ueno / Ameyoko","Easy dinner, then Keisei 15 min home","Atre Ueno, 7-1-1 Ueno, Taito City, Tokyo 110-0005, Japan"]],
+ [["Morning","🍳","Tsukiji Outer Market","Tsukiji Stn","Walk and snack: tamagoyaki, wagyu skewers, fruit. Best 9 AM–1 PM; most shops are cash only. Monday is fine (closed Wed, Sun, holidays)","Tsukiji Outer Market, Chuo City, Tokyo"],
+  ["Afternoon","🍜","Ginza Kagari (lunch)","6-4-12 Ginza, back alley · ≈5 min from Ginza Stn","Rich chicken paitan ramen, Michelin Bib Gourmand. Counter seats with a walk-in queue; open 11 AM–3:30 PM","6-4-12 Ginza, Chuo City, Tokyo 104-0061, Japan"],
+  ["Afternoon","🍛","Backup lunch: RANGETSU of TOKYO","1F Nippon Kodo Bldg, 3-5-8 Ginza · 1 min from Ginza Stn","Hamburger steak, steak and curry; lunch ≈¥1,000. Easier to sit all 6 together","3-5-8 Ginza, Chuo City, Tokyo 104-0061, Japan"],
+  ["Afternoon","🍜","Backup lunch: Ginza HARU CHAN Ramen","3-11-6 Ginza","Shio (salt) ramen, Michelin Bib Gourmand. Open all day (Mon 9 AM–9 PM), small shop","3-11-6 Ginza, Chuo City, Tokyo 104-0061, Japan"],
+  ["Afternoon","👕","Uniqlo Ginza flagship","Ginza Stn","12 floors of Uniqlo","UNIQLO Ginza, Chuo City, Tokyo"],
+  ["Afternoon","✏️","Ginza Itoya","Ginza Stn","Giant stationery store","Ginza Itoya G.Itoya, Chuo City, Tokyo"],
+  ["Afternoon","🍰","Mitsukoshi Ginza food hall","Ginza Stn (basement)","Fancy sweets, free samples","Ginza Mitsukoshi, Chuo City, Tokyo"],
+  ["Afternoon","🌳","Namiki-dori stroll","Ginza 1–8 chome, parallel to Chuo-dori","Tree-lined street of brand boutiques, galleries and cafés. Calmer than the main street","Namiki-dori, Ginza, Chuo City, Tokyo"],
+  ["Evening","🥟","Ginza Tenryu (gyoza dinner)","PUZZLE GINZA 4F, 2-5-19 Ginza · by Ginza-itchome Stn","Famous jumbo gyoza. Open daily about 11 AM–9:30 PM; reservations only for set courses, so just walk in. Go early, before teamLab","2-5-19 Ginza, Chuo City, Tokyo 104-0061, Japan"],
+  ["Evening","📸","Photo spot 1: Shiba Park path","Shiba Park Area 4 · right outside Onarimon Stn Exit A6","Tree-lined path with street lamps leading straight to the tower. Good at sunset and night","MQ62+77 Minato City, Tokyo"],
+  ["Evening","📸","Photo spot 2: parking-lot stairs","4-5-5 Shibakoen · on the slope toward Akabanebashi","Famous stairway shot looking up at the lit-up tower; free, best after dark","https://maps.app.goo.gl/Ta3251ikCfTSCVKz5"],
+  ["Evening","📸","Photo spot 3: Akabanebashi crosswalk","By 7-Eleven Shiba 3-chome · 3 min from Akabanebashi Stn","Head-on night shot of the glowing tower at the end of a wide street. Then take the Oedo Line from Akabanebashi","Akabanebashi Station, Minato City, Tokyo"],
+  ["Evening","🌊","teamLab Planets (optional)","Shin-Toyosu Stn · ≈35 min from Tokyo Tower","Only if the group wants: walk through water and light art. Book a late time slot","teamLab Planets TOKYO, Koto City, Tokyo",K("teamLab Planets")],
+  ["Evening","🍛","Lalaport Toyosu","Toyosu Stn","Big food court, bay view","Urban Dock LaLaport Toyosu, Koto City, Tokyo"]],
+ [["Morning","🇰🇷","Shin-Okubo Korea Town","Shin-Okubo Stn","K-beauty shops, cheese hotdogs","Shin-Okubo Station, Shinjuku City, Tokyo"],
+  ["Afternoon","🏬","Shinjuku shopping","Shinjuku Stn","Lumine, Isetan, Bic Camera, Uniqlo","3-29-1 Shinjuku, Shinjuku City, Tokyo"],
+  ["Afternoon","🦖","Godzilla Head","Kabukicho, Shinjuku","Fun group photo","Godzilla Head, Shinjuku Toho Building, Tokyo"],
+  ["Evening","🤼","Sumo show (Shinjuku Sumo Club)","Sekisaku Bldg 2F, 2-5-22 Okubo · near Shin-Okubo Stn","Entertainment show by sumo wrestlers, not a real tournament. Live bouts, English MC, photo with the wrestlers. Book on Klook","2-5-22 Okubo, Shinjuku City, Tokyo 169-0072, Japan",K("Sumo Live Show with Photo in Shinjuku")],
+  ["Evening","🏮","Omoide Yokocho","1-2 Nishishinjuku · 1 min from Shinjuku Stn West Exit","Tiny lantern-lit alley of yakitori stalls: farewell dinner + photos. Most stalls seat only 6–8, so you may split up. Many add a small table charge (otoshi, ≈¥300–600 each). Bring cash; go early (by about 6 PM)","1-2 Nishishinjuku, Shinjuku City, Tokyo 160-0023, Japan"],
+  ["Evening","🥩","Farewell yakiniku","Shinjuku","Grill-your-own BBQ dinner","3-20-8 Shinjuku, Shinjuku City, Tokyo"]],
+ [["Morning","🚐","Leave Dragon Inn ≈4:45","Horikiri-Shobuen","Van or first trains","5-4-6 Horikiri, Katsushika City, Tokyo 124-0006"],
+  ["Morning","✈️","Narita T2","Tax refund check, then check-in","Flight 08:55","Narita Airport Terminal 2, Narita, Chiba"],
+  ["Afternoon","🍡","Shibamata Taishakuten (Dun Lee & Jane)","Shibamata Stn","Old-town temple street, dango","Shibamata Taishakuten, Katsushika City, Tokyo"]],
+ [["Morning","✈️","Dun Lee & Jane to the airport","Narita","Flight to confirm","Narita International Airport, Narita, Chiba"]]
+];
+const MEALIMG=[["skytree","f-ramen"],["f-tonkatsu","f-beef"],["city","f-omurice"],["f-unagi","f-okonomi"],["f-udon","shinjuku"],["snow","f-ramen2"],["f-nigiri","city"],["f-korean","f-beef"],["asakusa","shinjuku"],["airport","konbini"]];
+const MEALURL=[[null,null],[null,null],[null,null],[null,null],[null,null],["https://gala.co.jp/en/winter/",null],[null,null],[null,null],[null,G("2-3-19 Asakusa, Taito City, Tokyo")],[G("Narita Airport Terminal 2, Narita, Chiba"),G("convenience store near Horikiri-Shobuen Station")]];
+DAYS.forEach((x,i)=>{["lunch","dinner"].forEach((k,j)=>{if(!x[k][1]&&MEALURL[i][j])x[k][1]=MEALURL[i][j];});});
+const DIMG=["skytree","akiba","harajuku","asakusa","fuji","snow","tsukiji","shinjuku","airport","airport"];
+const L=v=>v[1]?`<a href="${v[1]}">${esc(v[0])} ↗</a>`:esc(v[0]);
+$("#days").innerHTML=`<div class="daytabs no-print" role="tablist" aria-label="Days">${DAYS.map((x,i)=>`<button type="button" class="daytab" role="tab" data-i="${i}"><span>${x.w} · Apr</span><b>${x.d}</b><small>${esc(x.t)}</small></button>`).join("")}</div><div id="dayPanel"></div>`;
+function dayHTML(x,i,STOPS,MEALIMG,DIMG,label){const tot=(x.cost.t||0)+(x.cost.a||0)+(x.cost.f||0)+(x.cost.o||0);
+ return `<div class="dayhero" style="background-image:url(img/${DIMG[i]}.jpg)"><div class="in"><div class="small" style="color:#fcd34d;font-weight:700;letter-spacing:.06em;text-transform:uppercase">${x.w}, April ${x.d} · ${label}</div><h3>${esc(x.t)}</h3><div class="chips"><span class="chip">📍 ${esc(x.area)}</span><span class="chip">≈ ¥${tot.toLocaleString()} per person</span><span class="chip">Walking <span class="walk">${[1,2,3].map(k=>`<i class="${k<=x.walk?"on":""}"></i>`).join("")}</span></span></div></div></div>
+ <div class="grid g2">
+  <div class="card" style="grid-column:1/-1"><h3>📍 Where we're going</h3><p class="small muted" style="margin:0 0 10px">Tap a place: Google Maps opens with a pin on the exact spot. Then tap Directions.</p>${["Morning","Afternoon","Evening"].map(sl=>{const st=(STOPS[i]||[]).filter(z=>z[0]===sl);if(!st.length)return"";return`<div class="shop-cat">${sl}</div><div class="shop">${st.map(z=>`<div class="stopw"><a class="itm shopitm" href="${/^https?:/.test(z[5])?z[5]:G(z[5])}">${PLIMG[z[2]]?`<span class="pimg"><img src="img/${PLIMG[z[2]]}" alt="" loading="lazy"></span>`:`<span class="em">${z[1]}</span>`}<span class="t"><b>${esc(z[2])}</b><span>📍 ${esc(z[3])}</span><span style="display:block">${esc(z[4])}</span></span><span class="go">↗</span></a>${z[6]?`<a class="pic" style="align-self:flex-start;margin-left:6px" href="${z[6]}">🎟️ Tickets & info ↗</a>`:""}</div>`).join("")}</div>`}).join("")}<details class="owe-more" style="margin-top:14px"><summary class="small">📝 Read the full plan in words</summary><div class="body small"><p><b>Morning:</b> ${esc(x.m)}</p><p><b>Afternoon:</b> ${esc(x.a)}</p><p><b>Evening:</b> ${esc(x.e)}</p></div></details></div>
+  <div class="card"><h3>🍽️ Where we eat</h3><div class="stack"><div class="meal"><img src="img/${MEALIMG[i][0]}.jpg" alt="" loading="lazy"><div><div class="small muted">Lunch</div>${L(x.lunch)}</div></div><div class="meal"><img src="img/${MEALIMG[i][1]}.jpg" alt="" loading="lazy"><div><div class="small muted">Dinner</div>${L(x.dinner)}</div></div></div><p class="small muted" style="margin:.8rem 0 0">Tap a name to open it in Google Maps. Photos show the dish or area, not the exact restaurant.</p></div>
+  <div class="card"><h3>🎟️ Book ahead</h3><p class="small">${esc(x.book)}</p>${x.klook.length?`<div class="stack small">${x.klook.map(k=>`<a class="btn ghost sm" href="${k[1]}">Klook: ${esc(k[0])} ↗</a>`).join("")}</div>`:`<p class="small muted">No Klook booking needed today.</p>`}</div>
+  <details class="card" style="padding:0;grid-column:1/-1"><summary><b>💡 More info for today (cost, what to wear, if it rains)</b></summary><div class="body">
+   <div class="slot"><b>Getting around</b><span>${esc(x.move)}</span></div>
+   <div class="slot"><b>Costs pp</b><span class="num">Transport ¥${(x.cost.t||0).toLocaleString()} · Activities ¥${(x.cost.a||0).toLocaleString()} · Meals ¥${(x.cost.f||0).toLocaleString()}${x.cost.o?` · Optional ¥${x.cost.o.toLocaleString()}`:""} <span class="pill s-estimated">Estimate</span></span></div>
+   <div class="slot"><b>Photo spots</b><span>${esc(x.photo)}</span></div><div class="slot"><b>Wear</b><span>${esc(x.wear)}</span></div><div class="slot"><b>If it rains</b><span>${esc(x.rain)}</span></div><div class="slot"><b>Rest stops</b><span>${esc(x.rest)}</span></div></div></details></div>
+ </div>`;}
+function renderDay(i){document.querySelectorAll(".daytab").forEach(b=>b.setAttribute("aria-selected",+b.dataset.i===i));$("#dayPanel").innerHTML=dayHTML(DAYS[i],i,STOPS,MEALIMG,DIMG,"Day "+(i+1));if(typeof fixLinks==="function")fixLinks();}
+document.querySelectorAll(".daytab").forEach(b=>b.onclick=()=>renderDay(+b.dataset.i));
+document.addEventListener("click",e=>{const st=e.target.closest(".stop[data-day]");if(st)renderDay(+st.dataset.day);});
+renderDay(0);
+
+/* KYOTO SIDE TRIP */
+const KDAYS=[
+ {d:"15",w:"Thu",t:"Kyoto day 1: shrines + Gion",area:"Kyoto (Shinkansen, overnight)",walk:3,
+  m:"Early Shinkansen from Tokyo Station to Kyoto (≈2h15, sit in Seat E to see Mt. Fuji). Bring a small overnight bag only; big luggage stays at Dragon Inn. Leave bags at the hotel.",
+  a:"Fushimi Inari (orange torii gates, 5 min by JR from Kyoto Station) → Kiyomizu-dera temple → walk down Sannenzaka & Ninenzaka old streets.",
+  e:"Gion at dusk (look, don't chase the geiko for photos) → dinner at Kichi Kichi, the viral omurice show (chef slices the omelette at your seat; 5 min walk from Sanjo Stn). Weekdays are dinner only, same-day booking that opens around 1 PM, so try to book while you're at Fushimi Inari. No slot? Walk to Pontocho lantern alley next door. Sleep in Kyoto.",
+  lunch:["Street snacks on the Fushimi Inari approach (inari sushi, yakitori)",G("Fushimi Inari Taisha, Kyoto")],dinner:["Kichi Kichi omurice (≈¥5,000–6,000; same-day booking, not guaranteed). Backup: Pontocho alley",G("185-4 Zaimokucho, Nakagyo Ward, Kyoto")],
+  klook:[["Kyoto activities on Klook",K("Kyoto")],["Kimono rental in Kyoto (optional)",K("Kyoto kimono rental")]],move:"Shinkansen Tokyo→Kyoto ≈¥14,170 + Kyoto trains/bus ≈¥1,000",cost:{t:15170,a:500,f:4500},book:"Shinkansen seats (Seat E) + Kyoto hotel (options below) + Kichi Kichi same-day booking (dinner slots open ≈1 PM; check their Instagram for the current method)",photo:"Torii tunnel at Fushimi Inari; Kiyomizu stage; Yasaka pagoda from Sannenzaka",wear:"Very comfy shoes (lots of steps and slopes)",rain:"Fushimi Inari and Kiyomizu are fine with an umbrella",rest:"Teahouses on Sannenzaka"},
+ {d:"16",w:"Fri",t:"Kyoto day 2: Arashiyama → back to Tokyo",area:"Arashiyama → Tokyo",walk:2,
+  m:"Early to Arashiyama (by 8 AM, before the crowds): Bamboo Grove → Tenryu-ji garden → Togetsukyo Bridge.",
+  a:"Back to central Kyoto: Nishiki Market snacks (optional) → collect bags → Shinkansen back to Tokyo (≈2h15).",
+  e:"Back at Dragon Inn around 6–7 PM. Dinner with the group, early night (Fuji tomorrow!).",
+  lunch:["Arashiyama street food or Nishiki Market snacks",G("Nishiki Market, Kyoto")],dinner:["Dinner with the group near the house",G("restaurants near Horikiri-Shobuen Station")],
+  klook:[],move:"JR Kyoto↔Arashiyama ≈¥500 + Shinkansen Kyoto→Tokyo ≈¥14,170",cost:{t:14670,a:500,f:4000},book:"Return Shinkansen seats (afternoon)",photo:"Bamboo Grove early morning; Togetsukyo Bridge",wear:"Comfy shoes, light jacket for the morning",rain:"Tenryu-ji garden is still lovely in light rain",rest:"Shinkansen nap"}];
+const KSTOPS=[
+ [["Morning","🚄","Shinkansen to Kyoto","Tokyo Stn → Kyoto Stn","≈2h15, sit in Seat E for Mt. Fuji","Tokyo Station, Chiyoda City, Tokyo"],
+  ["Afternoon","⛩️","Fushimi Inari","Inari Stn (JR, 5 min from Kyoto)","The famous tunnel of orange torii gates","Fushimi Inari Taisha, Kyoto"],
+  ["Afternoon","🏯","Kiyomizu-dera","Bus or taxi from Kyoto Stn","Big wooden temple with a city view","Kiyomizu-dera, Kyoto"],
+  ["Afternoon","🍵","Sannenzaka & Ninenzaka","Below Kiyomizu-dera","Old stone streets, sweets, matcha","Sannenzaka, Higashiyama Ward, Kyoto"],
+  ["Evening","🏮","Gion","Gion-Shijo Stn","Kyoto's old geisha district at dusk","Hanamikoji Street, Higashiyama Ward, Kyoto"],
+  ["Evening","🍳","Kichi Kichi omurice","Sanjo Stn exit 6 (≈5 min walk)","The viral chef who slices the omelette at your seat. Same-day booking from ≈1 PM","185-4 Zaimokucho, Nakagyo Ward, Kyoto"],
+  ["Evening","🍢","Pontocho (backup dinner)","Near Gion, by the river","Lantern-lit dinner alley if Kichi Kichi is full","Pontocho, Nakagyo Ward, Kyoto"]],
+ [["Morning","🎋","Arashiyama Bamboo Grove","Saga-Arashiyama Stn (JR)","Go by 8 AM before the crowds","Arashiyama Bamboo Grove, Kyoto"],
+  ["Morning","🌿","Tenryu-ji garden","Next to the Bamboo Grove","Zen garden and pond","Tenryu-ji, Kyoto"],
+  ["Morning","🌉","Togetsukyo Bridge","Arashiyama","River + mountain view","Togetsukyo Bridge, Kyoto"],
+  ["Afternoon","🍡","Nishiki Market (optional)","Shijo / Karasuma","Kyoto's food street","Nishiki Market, Kyoto"],
+  ["Afternoon","🚄","Shinkansen back to Tokyo","Kyoto Stn → Tokyo Stn","≈2h15, then train home","Kyoto Station, Kyoto"],
+  ["Evening","🏠","Back to Dragon Inn","Horikiri-Shobuen","Dinner with the group","5-4-6 Horikiri, Katsushika City, Tokyo 124-0006"]]];
+const KMEAL=[["pl/ky-inari","f-omurice"],["pl/ky-nishiki","f-ramen2"]];const KDIMG=["kyoto","arashiyama"];
+function renderKyoto(i){document.querySelectorAll(".kytab").forEach(b=>b.setAttribute("aria-selected",+b.dataset.i===i));$("#kyPanel").innerHTML=dayHTML(KDAYS[i],i,KSTOPS,KMEAL,KDIMG,"Kyoto day "+(i+1)).replace(/Where we're going/,"Where you're going").replace(/Where we eat/,"Where to eat");fixLinks();}
+document.querySelectorAll(".kytab").forEach(b=>b.onclick=()=>renderKyoto(+b.dataset.i));
+renderKyoto(0);
+function fixLinks(){document.querySelectorAll('a[href^="http"]').forEach(a=>{a.target="_blank";a.rel="noopener noreferrer";});}
+fixLinks();
+
+/* WEAR */
+const WEAR=[
+ {t:"Travel days (Apr 13, 21)",c:["#f4d9dd","#ffffff","#6f8fae","#d9d4cf"],ex:"Joggers or wide pants, soft knit, light jacket, slip-on sneakers.",acc:"Neck pillow, scarf, crossbody bag",reuse:"Knit + jacket reused all week"},
+ {t:"City walking (Apr 14, 15, 19, 20)",c:["#c8463d","#ffffff","#2e2a33","#dfe8f1"],ex:"Jeans or skirt + top + cardigan/trench; comfy walking shoes.",acc:"Foldable umbrella, sunglasses, tote",reuse:"Bottoms rotate; mix tops for different photos"},
+ {t:"Mt. Fuji photos (Apr 17–18)",c:["#ffffff","#f4d9dd","#d98c99","#f3e3c3"],ex:"Warm coat or puffer, sweater, scarf. Mornings by the lake can be near freezing.",acc:"Beanie, gloves, thermal inner, hand warmers",reuse:"Thermals reused on snow day"},
+ {t:"Snow play (Apr 16)",c:["#c8463d","#6f8fae","#c9a24a","#ffffff"],ex:"Rental jacket/pants or your own waterproof layers; thermal top + leggings; wool socks.",acc:"Waterproof gloves (not knit), sunglasses, lip balm, plastic bag for wet stuff",reuse:"Rent the waterproof shell and boots there instead of buying"}
+];
+$("#wearCards").innerHTML=WEAR.map(w=>`<div class="card"><h3>${w.t}</h3><p class="small"><b>Outfit:</b> ${esc(w.ex)}<br><b>Accessories:</b> ${esc(w.acc)}<br><b>Reuse:</b> ${esc(w.reuse)}</p></div>`).join("");
+
+/* STORES */
+const STORES=[
+ {n:"7-Eleven",c:"#3f8a5f",items:[["Breakfast","Egg sandwich (tamago sando) ≈¥300; onigiri ≈¥150–250"],["Lunch/dinner","Bento heated in-store ≈¥500–700; pasta/noodle cups"],["Coffee","Seven Café self-serve ≈¥120–250"],["Dessert","Mochi, cream puffs, seasonal sweets (seasonal)"],["Train snacks","7 Premium chips, dried fruit, onigiri"],["Useful","ATM for foreign cards (Seven Bank), socks, chargers"]]},
+ {n:"Lawson",c:"#6f8fae",items:[["Breakfast","Onigiri, Machi Café latte"],["Lunch/dinner","Karaage-kun fried chicken bites ≈¥250; bento"],["Coffee","Machi Café ≈¥150–250"],["Dessert","Premium Roll Cake ≈¥200; Uchi Café sweets (seasonal flavors)"],["Train snacks","Karaage-kun, sandwiches"],["Useful","Natural Lawson branches for healthier picks (branch-dependent)"]]},
+ {n:"FamilyMart",c:"#4a90b0",items:[["Breakfast","Famichiki chicken ≈¥230; onigiri"],["Lunch/dinner","Bento, ramen bowls, hot snacks by the till"],["Coffee","Famima Café; frappés (seasonal)"],["Dessert","Soft-serve and seasonal desserts (branch-dependent)"],["Train snacks","Famichiki, chips, drinks"],["Useful","Convenience Wear socks/towels, phone cables, umbrellas"]]}
+];
+$("#storeCards").innerHTML=STORES.map(s=>`<div class="card store-card"><h3><span class="store-dot" style="background:${s.c}"></span>${s.n}</h3><ul class="tight small">${s.items.map(i=>`<li><b>${i[0]}:</b> ${esc(i[1])}</li>`).join("")}</ul></div>`).join("");
+
+/* BUDGET */
+const PM={rate:2.50,buf:{budget:10,comfy:10},scen:"budget",v:3,
+ rows:[
+  ["🚆","Airport train (both ways)",2600,2600],
+  ["🚇","Trains & metro around Tokyo (8 days)",6000,8000],
+  ["🍙","Food (9 days)",40500,63000],
+  ["🗻","Mt. Fuji photo-spots tour",8000,12000],
+  ["⛷️","Snow day: Shinkansen",14020,14020],
+  ["🎿","Snow day: gondola + rentals",8000,14000],
+  ["🎟️","Activities (chopsticks, Shibuya Sky, teamLab)",8000,14000],
+  ["🛍️","Shopping & pasalubong",10000,30000]
+ ]};
+const DEF=PM;
+let B=store.get("pocket",null);
+if(!B||B.v!==3){B=JSON.parse(JSON.stringify(PM));}
+const fmtP=v=>"₱"+Math.round(v).toLocaleString();
+const fmtY=v=>"¥"+Math.round(v).toLocaleString();
+function renderBudget(){
+  const sc=B.scen,ix=sc==="budget"?2:3;
+  $("#scen").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.s===sc));
+  $("#rate").value=B.rate;$("#pmBuf").value=B.buf[sc];
+  $("#pmRows").innerHTML=B.rows.map((r,i)=>`<div class="pm-row"><span><span class="pm-e">${r[0]}</span>${esc(r[1])}</span><span class="pm-in">¥ <input class="inp num" id="pm${i}" type="number" min="0" step="500" value="${r[ix]}" aria-label="${esc(r[1])}"></span><span class="num pm-php2">${fmtP(r[ix]/B.rate)}</span></div>`).join("");
+  B.rows.forEach((r,i)=>{$("#pm"+i).onchange=e=>{r[ix]=Math.max(0,+e.target.value||0);save()}});
+  const sub=B.rows.reduce((t,r)=>t+r[ix],0),buf=sub*B.buf[sc]/100,tot=sub+buf;
+  $("#pmBufY").textContent=fmtY(buf);
+  $("#pmY").textContent=fmtY(tot);$("#pmP").textContent="≈ "+fmtP(tot/B.rate)+" per person";
+  $("#pmNote").textContent=(sc==="budget"?"Tipid":"Comfy")+" plan, including "+B.buf[sc]+"% extra for surprises.";
+  $("#bPP")&&($("#bPP").textContent=fmtP(tot/B.rate));
+}
+function save(){store.set("pocket",B);renderBudget();}
+$("#rate").onchange=e=>{const v=+e.target.value;if(v>0){B.rate=v;save()}};
+$("#pmBuf").onchange=e=>{B.buf[B.scen]=Math.max(0,+e.target.value||0);save()};
+$("#scen").querySelectorAll("button").forEach(b=>b.onclick=()=>{B.scen=b.dataset.s;save()});
+$("#resetBud").onclick=()=>{B=JSON.parse(JSON.stringify(PM));save()};
+renderBudget();
+
+/* print summary */
+$("#printBtn").onclick=()=>{
+  const s=STAYS.find(x=>x.id==="dragon")||STAYS[0];
+  $("#printSummary").innerHTML=`<div class="wrap"><button class="btn no-print" id="closePrint" type="button">← Back to full site</button>
+  <h1 style="margin:14px 0 4px">Tokyo Trip 2027 · Apr 13–21</h1><p>6 friends · Tokyo + Mt. Fuji</p>
+  <p class="small muted">To print: open this page in its own browser tab, then use your browser's Print menu.</p>
+  <h3>Plan</h3><ul class="tight">${DAYS.map(d=>`<li><b>${d.w} Apr ${d.d}:</b> ${esc(d.t)}</li>`).join("")}</ul>
+  <h3>Lodging</h3><p>${esc(s.name)} (${esc(s.area)}) · 8 nights · Fuji as a day trip</p>
+  <h3>Pocket money</h3><p>About ${$("#pmY").textContent} per person (${$("#pmP").textContent.replace("≈ ","")}) for Apr 13–21, ${B.scen==="budget"?"tipid":"comfy"} plan.</p>
+  <h3>Musts</h3><ul class="tight"><li>Passport 6+ months; Japan visa for everyone except Brian (lodge mid-Jan–mid-Feb 2027)</li><li>eTravel within 72 h before departure and before return</li><li>Visit Japan Web QR</li><li>Travel tax ₱1,620 if not in ticket</li></ul></div>`;
+  document.body.classList.add("print-mode");window.scrollTo(0,0);
+  $("#closePrint").onclick=()=>{document.body.classList.remove("print-mode");go("overview");};
+};
+})();
+</script>
+</body>
+</html>
